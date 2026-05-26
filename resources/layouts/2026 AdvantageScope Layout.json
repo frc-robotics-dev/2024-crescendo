@@ -1,0 +1,122 @@
+{
+  "hubs": [
+    {
+      "x": 410,
+      "y": 215,
+      "width": 1100,
+      "height": 650,
+      "state": {
+        "sidebar": {
+          "width": 500,
+          "expanded": [
+            "/AdvantageKit/RealOutputs",
+            "/Tuning/TuneShot",
+            "/AdvantageKit/Hood/Data",
+            "/Shot Map Tuning",
+            "/Tuning",
+            "/Tuning/Shot Map Tuning",
+            "/Tuning/Fast Lane",
+            "/AdvantageKit/RealOutputs/LobFuelIntoAlliance",
+            "/AdvantageKit/RealOutputs/ClimbSequence",
+            "/AdvantageKit/RealOutputs/IntakePivot/Profile",
+            "/Tuning/IntakePivot",
+            "/Tuning/IntakeRoller",
+            "/Tuning/Indexer",
+            "/Tuning/Feeder",
+            "/Tuning/Turret",
+            "/Tuning/Hood",
+            "/AdvantageKit/RealOutputs/Flywheels/Profile",
+            "/Tuning/Flywheels",
+            "/AdvantageKit/RealOutputs/TuneShot",
+            "/Tuning/ClimberDeploy",
+            "/Tuning/ClimberHook",
+            "/SmartDashboard",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/Rectangle",
+            "/AdvantageKit/RealOutputs/TrackTargetCommand",
+            "/AdvantageKit/RealOutputs/Turret/Profile",
+            "/AdvantageKit/RealOutputs/TuneShot/ShotInfo",
+            "/SmartDashboard/MapleSim",
+            "/SmartDashboard/MapleSim/MatchData",
+            "/AdvantageKit/RealOutputs/ShotCalculator",
+            "/AdvantageKit/RealOutputs/ShootFuelIntoHubOrLob"
+          ]
+        },
+        "tabs": {
+          "selected": 1,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "y52xibc9xwne75fvv24vsc7725ex5to1",
+              "renderer": "",
+              "controlsHeight": 0
+            },
+            {
+              "type": 3,
+              "title": "3D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GameViz/DrivePose3d",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "FF2026"
+                    }
+                  },
+                  {
+                    "type": "component",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/SuperstructureViz/Components",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GameViz/FuelTranslations",
+                    "logType": "Translation3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Fuel"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GameViz/FuelInHopper",
+                    "logType": "Translation3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Fuel"
+                    }
+                  }
+                ],
+                "game": "FRC:2026 Field"
+              },
+              "controllerUUID": "7xtbsfsamqpxc8h3dtzogsabq6773dkm",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  -6.708072379239603,
+                  1.2391051222675622,
+                  -0.024821875578872277
+                ],
+                "cameraTarget": [
+                  -1.9587942552870001,
+                  0.5,
+                  -2.570124905668626
+                ]
+              },
+              "controlsHeight": 200
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "26.0.1"
+}

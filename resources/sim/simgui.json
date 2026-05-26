@@ -1,0 +1,81 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/AdvantageKit/RealOutputs/Alerts": "Alerts",
+      "/AdvantageKit/RealOutputs/Drive/Modules/Viz/BackLeft": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/Drive/Modules/Viz/BackRight": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/Drive/Modules/Viz/FrontLeft": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/Drive/Modules/Viz/FrontRight": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/PathPlanner": "Alerts",
+      "/AdvantageKit/RealOutputs/PhotonAlerts": "Alerts",
+      "/AdvantageKit/RealOutputs/SuperstructureViz/2D": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/SuperstructureViz/asdas": "Mechanism2d",
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Alerts": "Alerts",
+      "/SmartDashboard/Alliance Color": "String Chooser",
+      "/SmartDashboard/Auto": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/PathPlanner": "Alerts",
+      "/SmartDashboard/PhotonAlerts": "Alerts",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/VisionSystemSim-AprilTagSimulator/Sim Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-ObjectDetectionSimulator/Sim Field": "Field2d",
+      "/SmartDashboard/hey": "Scheduler"
+    },
+    "windows": {
+      "/SmartDashboard/Alerts": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Auto": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "Trajectory": {
+          "length": 0.25,
+          "weight": 3.0,
+          "width": 0.25
+        },
+        "bottom": 1914,
+        "height": 8.069275856018066,
+        "left": 245,
+        "right": 3942,
+        "top": 118,
+        "width": 16.54119300842285,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Scheduler": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
+    "transitory": {
+      "SmartDashboard": {
+        "Autochooser": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}
