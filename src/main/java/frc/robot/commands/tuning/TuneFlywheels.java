@@ -1,0 +1,99 @@
+package frc.robot.commands.tuning;
+
+import frc.lib.logging.LoggedTunableNumber;
+import frc.lib.motorcontrol.FFConfig;
+import frc.lib.motorcontrol.PIDConfig;
+import frc.robot.subsystems.launcher.flywheels.Flywheels;
+import frc.robot.subsystems.launcher.flywheels.FlywheelsConstants;
+
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+
+public class TuneFlywheels extends Command {
+    private final Flywheels flywheels;
+
+    private final LoggedTunableNumber kP;
+    private final LoggedTunableNumber kI;
+    private final LoggedTunableNumber kD;
+    private final LoggedTunableNumber kS;
+    private final LoggedTunableNumber kV;
+    private final LoggedTunableNumber kA;
+    private final LoggedTunableNumber maxAccelerationRpmPerSec;
+
+    private final LoggedTunableNumber setpointVelocityRpm;
+
+    public TuneFlywheels(Flywheels flywheels) {
+        this.flywheels = flywheels;
+
+        // Get initial values from config
+        final PIDConfig initialPID = FlywheelsConstants.kPID;
+        final FFConfig initialFF = FlywheelsConstants.kFF;
+        final double initialRateLimit = FlywheelsConstants.kRateLimit;
+
+        // Create tunable numbers
+        this.kP = new LoggedTunableNumber("Flywheels/kP", initialPID.kP());
+        this.kI = new LoggedTunableNumber("Flywheels/kI", initialPID.kI());
+        this.kD = new LoggedTunableNumber("Flywheels/kD", initialPID.kD());
+        this.kS = new LoggedTunableNumber("Flywheels/kS", initialFF.kS());
+        this.kV = new LoggedTunableNumber("Flywheels/kV", initialFF.kV());
+        this.kA = new LoggedTunableNumber("Flywheels/kA", initialFF.kA());
+
+        this.maxAccelerationRpmPerSec = new LoggedTunableNumber("Flywheels/MaxAccelerationRpmPerSec", Units.radiansPerSecondToRotationsPerMinute(initialRateLimit));
+
+        this.setpointVelocityRpm = new LoggedTunableNumber("Flywheels/SetpointRpm", Units.radiansPerSecondToRotationsPerMinute(FlywheelsConstants.START));
+
+        addRequirements(flywheels);
+    }
+
+    @Override
+    public void initialize() {
+        // Set tuning mode to true
+        kP.setTuningMode(true);
+        kI.setTuningMode(true);
+        kD.setTuningMode(true);
+        kS.setTuningMode(true);
+        kV.setTuningMode(true);
+        kA.setTuningMode(true);
+        maxAccelerationRpmPerSec.setTuningMode(true);
+        setpointVelocityRpm.setTuningMode(true);
+    }
+
+    @Override
+    public void execute() {
+        // Update PID only if changed
+        LoggedTunableNumber.ifChanged(
+            hashCode(),
+            () -> flywheels.setPID(kP.get(), kI.get(), kD.get()),
+            kP, kI, kD);
+        
+        // Update FF only if changed
+        LoggedTunableNumber.ifChanged(
+            hashCode(),
+            () -> flywheels.setFeedforward(new SimpleMotorFeedforward(kS.get(), kV.get(), kA.get())),
+            kS, kV, kA);
+
+        // Update slew rate limiter only if changed
+        LoggedTunableNumber.ifChanged(
+            hashCode(),
+            () -> flywheels.setProfile(new SlewRateLimiter(Units.rotationsPerMinuteToRadiansPerSecond(maxAccelerationRpmPerSec.get()))),
+            maxAccelerationRpmPerSec);
+
+        // Update setpoint only if changed
+        LoggedTunableNumber.ifChanged(
+            hashCode(),
+            () -> flywheels.setVelocity(Units.rotationsPerMinuteToRadiansPerSecond(setpointVelocityRpm.get())),
+            setpointVelocityRpm);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        flywheels.stop();
+    }
+}

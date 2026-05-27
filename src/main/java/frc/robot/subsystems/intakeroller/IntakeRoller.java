@@ -1,0 +1,93 @@
+package frc.robot.subsystems.intakeroller;
+
+import frc.lib.logging.LoggedTracer;
+import frc.lib.subsystem.FFSubsystemBase;
+import frc.robot.subsystems.intakeroller.io.IntakeRollerIO;
+import frc.robot.subsystems.intakeroller.io.IntakeRollerIOInputsAutoLogged;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.RobotState;
+import lombok.Setter;
+
+public class IntakeRoller extends FFSubsystemBase {
+    private final IntakeRollerIO io;
+    private final IntakeRollerIOInputsAutoLogged inputs = new IntakeRollerIOInputsAutoLogged();
+
+    // Constants
+    @Setter private SimpleMotorFeedforward feedforward;
+
+    // Control
+    private double targetVelocityRadPerSec = IntakeRollerConstants.START;
+
+    private boolean shouldRunVelocity = false;
+    
+    public IntakeRoller(IntakeRollerIO io) {
+        this.io = io;
+
+        feedforward = IntakeRollerConstants.kFF.getSimpleMotorFF();
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        io.updateInputs(inputs);
+        Logger.processInputs("IntakeRoller", inputs);
+
+        // Run velocity mode unless requested to stop
+        if (shouldRunVelocity && RobotState.isEnabled()) {
+            boolean atGoal = isAtVelocity(targetVelocityRadPerSec, IntakeRollerConstants.tolerance);
+            io.runVelocity(targetVelocityRadPerSec, feedforward.calculate(targetVelocityRadPerSec));
+
+            // Log state
+            Logger.recordOutput("IntakeRoller/SetpointVelocityRadPerSec", targetVelocityRadPerSec);
+            Logger.recordOutput("IntakeRoller/AtGoal", atGoal);
+        } else {
+            // Reset setpoint
+            targetVelocityRadPerSec = 0.0;
+
+            // Clear logs
+            Logger.recordOutput("IntakeRoller/SetpointVelocityRadPerSec", 0.0);
+            Logger.recordOutput("IntakeRoller/AtGoal", true);
+        }
+
+        Logger.recordOutput("IntakeRoller/CurrentVelocityRadPerSec", getVelocityRadPerSec());
+
+        // Record cycle time
+        LoggedTracer.record("IntakeRoller");
+    }
+
+    public double getVelocityRadPerSec() {
+        return inputs.velocityRadPerSec;
+    }
+
+    public void setPID(double kP, double kI, double kD) {
+        io.setPID(kP, kI, kD);
+    }
+
+    @Override
+    public void setBrakeMode(boolean enabled) {
+        io.setBrakeMode(enabled);
+    }
+
+    @Override
+    public void stop() {
+        io.stop();
+    }
+
+    public void runVolts(double volts) {
+        shouldRunVelocity = false;
+        io.runVolts(volts);
+    }
+
+    public void setVelocity(double velocityRadPerSec) {
+        shouldRunVelocity = true;
+        targetVelocityRadPerSec = velocityRadPerSec;
+    }
+
+    public boolean isAtVelocity(double velocityRadPerSec, double tolerance) {
+        return MathUtil.isNear(velocityRadPerSec, getVelocityRadPerSec(), tolerance);
+    }
+}

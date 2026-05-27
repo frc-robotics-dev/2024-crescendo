@@ -1,0 +1,106 @@
+package frc.robot.commands.tuning;
+
+import frc.lib.logging.LoggedTunableNumber;
+import frc.lib.motorcontrol.FFConfig;
+import frc.lib.motorcontrol.PIDConfig;
+import frc.robot.subsystems.intakepivot.IntakePivot;
+import frc.robot.subsystems.intakepivot.IntakePivotConstants;
+
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
+
+public class TuneIntakePivot extends Command {
+    private final IntakePivot intakePivot;
+
+    private final LoggedTunableNumber kP;
+    private final LoggedTunableNumber kI;
+    private final LoggedTunableNumber kD;
+    private final LoggedTunableNumber kS;
+    private final LoggedTunableNumber kG;
+    private final LoggedTunableNumber kV;
+    private final LoggedTunableNumber kA;
+    private final LoggedTunableNumber maxVelocityDegPerSec;
+    private final LoggedTunableNumber maxAccelerationDegPerSec2;
+
+    private final LoggedTunableNumber setpointAngleDeg;
+
+    public TuneIntakePivot(IntakePivot intakePivot) {
+        this.intakePivot = intakePivot;
+
+        // Get initial values from config
+        final PIDConfig initialPID = IntakePivotConstants.kPID;
+        final FFConfig initialFF = IntakePivotConstants.kFF;
+        final Constraints initialConstraints = IntakePivotConstants.kConstraints;
+
+        // Create tunable numbers
+        this.kP = new LoggedTunableNumber("IntakePivot/kP", initialPID.kP());
+        this.kI = new LoggedTunableNumber("IntakePivot/kI", initialPID.kI());
+        this.kD = new LoggedTunableNumber("IntakePivot/kD", initialPID.kD());
+        this.kS = new LoggedTunableNumber("IntakePivot/kS", initialFF.kS());
+        this.kG = new LoggedTunableNumber("IntakePivot/kG", initialFF.kG());
+        this.kV = new LoggedTunableNumber("IntakePivot/kV", initialFF.kV());
+        this.kA = new LoggedTunableNumber("IntakePivot/kA", initialFF.kA());
+
+        this.maxVelocityDegPerSec = new LoggedTunableNumber("IntakePivot/MaxVelocityDegPerSec", Units.radiansToDegrees(initialConstraints.maxVelocity));
+        this.maxAccelerationDegPerSec2 = new LoggedTunableNumber("IntakePivot/MaxAccelerationDegPerSec2", Units.radiansToDegrees(initialConstraints.maxAcceleration));
+
+        this.setpointAngleDeg = new LoggedTunableNumber("IntakePivot/SetpointDeg", Units.radiansToDegrees(IntakePivotConstants.START));
+
+        addRequirements(intakePivot);
+    }
+
+    @Override
+    public void initialize() {
+        // Set tuning mode to true
+        kP.setTuningMode(true);
+        kI.setTuningMode(true);
+        kD.setTuningMode(true);
+        kS.setTuningMode(true);
+        kG.setTuningMode(true);
+        kV.setTuningMode(true);
+        kA.setTuningMode(true);
+        maxVelocityDegPerSec.setTuningMode(true);
+        maxAccelerationDegPerSec2.setTuningMode(true);
+        setpointAngleDeg.setTuningMode(true);
+    }
+
+    @Override
+    public void execute() {
+        // Update PID only if changed
+        LoggedTunableNumber.ifChanged(
+            hashCode(),
+            () -> intakePivot.setPID(kP.get(), kI.get(), kD.get()),
+            kP, kI, kD);
+        
+        // Update FF only if changed
+        LoggedTunableNumber.ifChanged(
+            hashCode(),
+            () -> intakePivot.setFeedforward(new ArmFeedforward(kS.get(), kG.get(), kV.get(), kA.get())),
+            kS, kG, kV, kA);
+
+        // Update trapezoid profile only if changed
+        LoggedTunableNumber.ifChanged(
+            hashCode(),
+            () -> intakePivot.setProfile(new TrapezoidProfile(new Constraints(Units.degreesToRadians(maxVelocityDegPerSec.get()), Units.degreesToRadians(maxAccelerationDegPerSec2.get())))),
+            maxVelocityDegPerSec, maxAccelerationDegPerSec2);
+
+        // Update setpoint only if changed
+        LoggedTunableNumber.ifChanged(
+            hashCode(),
+            () -> intakePivot.setAngle(Units.degreesToRadians(setpointAngleDeg.get())),
+            setpointAngleDeg);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        intakePivot.stop();
+    }
+}
