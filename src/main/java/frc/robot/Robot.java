@@ -7,6 +7,7 @@ import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Elastic;
 
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.crescendo2024.Arena2024Crescendo;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -35,7 +36,7 @@ public class Robot extends LoggedRobot {
     private final RobotContainer robotContainer;
     
     public Robot() {
-        Logger.recordMetadata("ProjectName", "FF2026_" + Constants.getRobot().name().toUpperCase()); // Set a metadata value
+        Logger.recordMetadata("ProjectName", "FF2024_" + Constants.getRobot().name().toUpperCase()); // Set a metadata value
 
         // Set up data receivers & replay source
         switch (Constants.getMode()) {
@@ -93,7 +94,7 @@ public class Robot extends LoggedRobot {
             DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
             DriverStationSim.notifyNewData();
 
-            // MapleSimUtil.initializeArena(); // Setup MapleSim arena
+            SimulatedArena.overrideInstance(new Arena2024Crescendo()); // Setup MapleSim arena
         }
 
         // Initialize RobotContainer

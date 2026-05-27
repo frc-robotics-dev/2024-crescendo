@@ -3,7 +3,6 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import frc.lib.io.JoystickUtil;
 import frc.lib.math.GeomUtil;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -18,9 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import lombok.experimental.ExtensionMethod;
 
-@ExtensionMethod(JoystickUtil.class)
 public class DriveToPose extends Command {
     private final Drive drive;
     private final Supplier<Pose2d> target;

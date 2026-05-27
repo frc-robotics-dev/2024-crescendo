@@ -4,14 +4,10 @@ import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.simulation.VisionSystemSim;
 
-/** Adds practice match elements, including score tracking and Hub shifts, to GameViz. */
 public class PracticeMatchViz extends GameViz {
     private int score = 0;
     
-    public PracticeMatchViz(
-        Drive drive,
-        VisionSystemSim visionViz
-    ) {
+    public PracticeMatchViz(Drive drive, VisionSystemSim visionViz) {
         super(drive, visionViz);
     }
 

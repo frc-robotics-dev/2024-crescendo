@@ -1,9 +1,11 @@
 package frc.robot.auto;
 
-import frc.lib.auto.pathplanner.LocalADStarAK;
 import frc.lib.auto.pathplanner.PathPlannerUtil;
+import frc.robot.auto.autos.TestAuto;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.viz.GameViz;
+import frc.robot.viz.SimConstants;
+
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -23,8 +25,6 @@ public class AutoSelector {
     private Command autoCommand;
     private AutoRoutine lastSelectedAuto;
 
-    private final double simAutoTimeSec = 20;
-
     public AutoSelector(
         Drive drive,
         GameViz gameViz
@@ -34,10 +34,12 @@ public class AutoSelector {
 
         // Configure PathPlanner
         PathPlannerUtil.configureAutoBuilder(drive);
-        Pathfinding.setPathfinder(new LocalADStarAK());
+        Pathfinding.ensureInitialized();
 
         // Configure autos
         AutoCommands autoCommands = new AutoCommands(drive);
+
+        routineChooser.addDefaultOption("Test Auto", new TestAuto(drive));
     }
 
     public void startAuto() {
@@ -53,7 +55,7 @@ public class AutoSelector {
                 .withName(selectedAuto.getClass().getSimpleName());
 
         if (RobotBase.isSimulation()) {
-            autoCommand = autoCommand.withTimeout(simAutoTimeSec);
+            autoCommand = autoCommand.withTimeout(SimConstants.autoTimeSec);
         }
 
         CommandScheduler.getInstance().schedule(autoCommand);
