@@ -1,7 +1,5 @@
 package frc.robot.commands.tuning;
 
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Consumer;
@@ -42,16 +40,6 @@ public class SysIdExecutor {
                     consumer,
                     null, // No log consumer, since data recorded by AdvantageKit
                     subsystem));
-    }
-
-    /** Use this constructor if you want to go with the default values for {@code rampRate}, {@code stepVoltage}, and {@code timeout} */
-    public SysIdExecutor(SubsystemBase subsystem, Consumer<Voltage> consumer) {
-        this(
-            subsystem,
-            consumer,
-            Volts.of(1).per(Second),
-            Volts.of(7),
-            Seconds.of(10));
     }
 
     /** Returns a command to run a quasistatic test in the specified direction. */

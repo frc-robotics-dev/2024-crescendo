@@ -76,12 +76,14 @@ public class MapleSimSwerveDrivetrain {
         this.pigeonSim = pigeon.getSimState();
         simModules = new SimSwerveModule[moduleConstants.length];
 
-        DriveTrainSimulationConfig simulationConfig = DriveTrainSimulationConfig.Default()
+        DriveTrainSimulationConfig simulationConfig =
+            DriveTrainSimulationConfig.Default()
                 .withRobotMass(robotMassWithBumpers)
                 .withBumperSize(bumperLengthX, bumperWidthY)
                 .withGyro(COTS.ofPigeon2())
                 .withCustomModuleTranslations(moduleLocations)
-                .withSwerveModule(new SwerveModuleSimulationConfig(
+                .withSwerveModule(
+                    new SwerveModuleSimulationConfig(
                         driveMotorModel,
                         steerMotorModel,
                         moduleConstants[0].DriveMotorGearRatio,

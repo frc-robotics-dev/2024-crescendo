@@ -4,10 +4,8 @@ import java.lang.reflect.Field;
 
 import frc.lib.logging.LoggedJVM;
 import frc.lib.logging.LoggedTracer;
-import frc.lib.logging.NTClientLogger;
-import frc.lib.rebuilt.sim.maplesim.MapleSimUtil;
-import frc.lib.rebuilt.sim.HubShiftUtil;
 import frc.lib.util.Elastic;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -95,12 +93,11 @@ public class Robot extends LoggedRobot {
             DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
             DriverStationSim.notifyNewData();
 
-            MapleSimUtil.initializeArena(); // Setup MapleSim arena
+            // MapleSimUtil.initializeArena(); // Setup MapleSim arena
         }
 
         // Initialize RobotContainer
         robotContainer = new RobotContainer();
-        robotContainer.test();
     }
 
     @Override
@@ -111,9 +108,6 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
         SmartDashboard.putData(CommandScheduler.getInstance());
         LoggedTracer.record("CommandScheduler");
-
-        // Log NT client list
-        NTClientLogger.log();
 
         // Log JVM info
         loggedJVM.update();
@@ -129,10 +123,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-        if (RobotBase.isSimulation() && Constants.isPracticeMatch) {
-            HubShiftUtil.initialize();
-        }
-
         robotContainer.autonomousInit();
     }
 
@@ -141,10 +131,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
-        if (RobotBase.isSimulation() && Constants.isPracticeMatch) {
-            HubShiftUtil.initialize();
-        }
-
         robotContainer.teleopInit();
 
         // Select Teleop Tab on Elastic
@@ -156,10 +142,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
-        if (RobotBase.isSimulation() && Constants.isPracticeMatch) {
-            HubShiftUtil.initialize();
-        }
-
         robotContainer.disabledInit();
 
         // Select Autonomous Tab on Elastic
@@ -173,11 +155,13 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void testInit() {
-        CommandScheduler.getInstance().cancelAll();
+        robotContainer.testInit();
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+        robotContainer.testPeriodic();
+    }
 
     @Override
     public void simulationInit() {

@@ -2,7 +2,6 @@ package frc.robot.subsystems.drive;
 
 import frc.lib.logging.LoggedTracer;
 import frc.lib.logging.LoggerUtil;
-import frc.lib.rebuilt.sim.TrenchCollisionSim;
 import frc.lib.swerve.MapleSimSwerveDrivetrain;
 import frc.robot.subsystems.drive.io.DriveIO;
 import frc.robot.subsystems.drive.io.DriveIOInputsAutoLogged;
@@ -16,26 +15,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 public class Drive extends SubsystemBase {
     private final DriveIO io;
     private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
 
-    @Setter
-    private TrenchCollisionSim trenchCollisionSim;
-
-    @Getter
     private final DriveViz viz = new DriveViz();
-
-    @Accessors(fluent = true)
-    @Setter
-    @Getter
-    private boolean shouldCoastAfterAutoEnd = false;
 
     public Drive(DriveIO io) {
         this.io = io;
@@ -90,16 +76,10 @@ public class Drive extends SubsystemBase {
 
     // Control Methods
     public void runVelocity(ChassisSpeeds speeds) {
-        if (RobotBase.isSimulation()) {
-            speeds = trenchCollisionSim.filterSpeeds(speeds, getPose(), getRotation());
-        }
         io.runVelocity(speeds);
     }
 
     public void runVelocity(ChassisSpeeds speeds, double[] moduleForcesX, double[] moduleForcesY) {
-        if (RobotBase.isSimulation()) {
-            speeds = trenchCollisionSim.filterSpeeds(speeds, getPose(), getRotation());
-        }
         io.runVelocity(speeds, moduleForcesX, moduleForcesY);
     }
 
@@ -113,8 +93,8 @@ public class Drive extends SubsystemBase {
     }
 
     public void stopWithX() {
-        io.stopWithX();
         stop();
+        io.stopWithX();
     }
 
     public void coast() {

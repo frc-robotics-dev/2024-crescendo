@@ -1,15 +1,8 @@
 package frc.robot.viz;
 
-import frc.lib.rebuilt.sim.HubShiftUtil;
-import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.intakepivot.IntakePivot;
-import frc.robot.subsystems.intakeroller.IntakeRoller;
-import frc.robot.subsystems.launcher.flywheels.Flywheels;
-import frc.robot.subsystems.launcher.hood.Hood;
 import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.wpilibj.RobotState;
+import org.photonvision.simulation.VisionSystemSim;
 
 /** Adds practice match elements, including score tracking and Hub shifts, to GameViz. */
 public class PracticeMatchViz extends GameViz {
@@ -17,14 +10,9 @@ public class PracticeMatchViz extends GameViz {
     
     public PracticeMatchViz(
         Drive drive,
-        IntakePivot intakePivot,
-        IntakeRoller intakeRoller,
-        Hood hood,
-        Flywheels flywheels,
-        Climber climber,
-        VisionSimulator visionViz
+        VisionSystemSim visionViz
     ) {
-        super(drive, intakePivot, intakeRoller, hood, flywheels, climber, visionViz);
+        super(drive, visionViz);
     }
 
     @Override
@@ -33,53 +21,9 @@ public class PracticeMatchViz extends GameViz {
         
         // Log score
         Logger.recordOutput("PracticeMatchViz/Score", score);
-
-        // Log hub shifts
-        Logger.recordOutput(
-            "PracticeMatchViz/Remaining Shift Time",
-            String.format("%.1f", Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0)));
-
-        Logger.recordOutput(
-            "PracticeMatchViz/Shift Active?",
-            HubShiftUtil.getShiftedShiftInfo().active());
-
-        Logger.recordOutput(
-            "PracticeMatchViz/Current Shift",
-            HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
-    }
-
-    @Override
-    public void startIntake() {
-        if (isMatchEnded()) {
-            return;
-        }
-        
-        super.startIntake();
-    }
-
-    @Override
-    public void shootFuel() {
-        if (isMatchEnded()) {
-            return;
-        }
-
-        super.shootFuel(
-            () -> {
-                if (HubShiftUtil.getShiftedShiftInfo().active() && !isMatchEnded()) {
-                    score++;
-                }
-            });
-    }
-
-    public void stopClimb() {
-        super.stopClimb();
-
-        if (climbSim.hasClimbed() && !isMatchEnded()) {
-            score += RobotState.isAutonomous() ? 15 : 10;
-        }
     }
 
     private boolean isMatchEnded() {
-        return HubShiftUtil.getShiftedShiftInfo().remainingTime() <= 0;
+        return false;
     }
 }

@@ -2,14 +2,7 @@ package frc.robot.auto;
 
 import frc.lib.auto.pathplanner.LocalADStarAK;
 import frc.lib.auto.pathplanner.PathPlannerUtil;
-import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.intakepivot.IntakePivot;
-import frc.robot.subsystems.intakeroller.IntakeRoller;
-import frc.robot.subsystems.launcher.flywheels.Flywheels;
-import frc.robot.subsystems.launcher.hood.Hood;
 import frc.robot.viz.GameViz;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -21,26 +14,19 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class AutoChooser {
+public class AutoSelector {
     private final Drive drive;
     private final GameViz gameViz;
 
-    private final LoggedDashboardChooser<AutoMode> routineChooser = new LoggedDashboardChooser<>("Auto");
+    private final LoggedDashboardChooser<AutoRoutine> routineChooser = new LoggedDashboardChooser<>("Auto");
 
     private Command autoCommand;
-    private AutoMode lastSelectedAuto;
+    private AutoRoutine lastSelectedAuto;
 
     private final double simAutoTimeSec = 20;
 
-    public AutoChooser(
+    public AutoSelector(
         Drive drive,
-        IntakePivot intakePivot,
-        IntakeRoller intakeRoller,
-        Indexer indexer,
-        Feeder feeder,
-        Hood hood,
-        Flywheels flywheels,
-        Climber climber,
         GameViz gameViz
     ) {
         this.drive = drive;
@@ -51,10 +37,11 @@ public class AutoChooser {
         Pathfinding.setPathfinder(new LocalADStarAK());
 
         // Configure autos
+        AutoCommands autoCommands = new AutoCommands(drive);
     }
 
     public void startAuto() {
-        AutoMode selectedAuto = routineChooser.get();
+        AutoRoutine selectedAuto = routineChooser.get();
 
         if (selectedAuto == null) {
             return;
@@ -73,7 +60,7 @@ public class AutoChooser {
     }
 
     public void updateAutoSelection() {
-        final AutoMode selectedAuto = routineChooser.get();
+        final AutoRoutine selectedAuto = routineChooser.get();
 
         if (selectedAuto == null) {
             logTrajectory(); // Clear poses

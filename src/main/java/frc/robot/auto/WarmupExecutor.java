@@ -4,7 +4,6 @@ import java.io.File;
 
 import frc.lib.auto.pathplanner.PathPlannerUtil;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.launcher.LaunchCalculator;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -49,11 +48,7 @@ public final class WarmupExecutor {
     }
 
     private void warmupShotCalculator() {
-        LaunchCalculator.getInstance().calculateShotInfo(
-            drive.getPose(),
-            drive.getRobotVelocity(),
-            drive.getFieldVelocity()
-        );
+        
     }
 
     private void warmupPathPlannerPaths() {
