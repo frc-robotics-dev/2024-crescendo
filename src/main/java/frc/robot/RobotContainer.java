@@ -56,7 +56,8 @@ public class RobotContainer {
     private final TeleopDriveCommand teleopDriveCommand;
     
     // Other
-    private final VisionEstimateConsumer visionEstimateConsumer = drive::addVisionMeasurement;
+    private final VisionEstimateConsumer visionEstimateConsumer =
+        (pose, timestamp, stdDevs) -> drive.addVisionMeasurement(pose, timestamp, stdDevs);
 
     public RobotContainer() {
         // Initialize subsystems based on robot type
