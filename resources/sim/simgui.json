@@ -46,17 +46,58 @@
           "weight": 3.0,
           "width": 0.25
         },
-        "bottom": 1914,
-        "height": 8.069275856018066,
-        "left": 245,
-        "right": 3942,
-        "top": 118,
-        "width": 16.54119300842285,
+        "bottom": 1476,
+        "builtin": "2024 Crescendo",
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
         "window": {
           "visible": true
         }
       },
       "/SmartDashboard/Scheduler": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/VisionSystemSim-AprilTagSimulator/Sim Field": {
+        "Trajectory": {
+          "arrows": false,
+          "color": [
+            0.25677624344825745,
+            0.6715686321258545,
+            0.0,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "apriltag": {
+          "arrowColor": [
+            0.9852941036224365,
+            0.9852941036224365,
+            0.9852941036224365,
+            255.0
+          ],
+          "arrowSize": 39,
+          "color": [
+            1.0,
+            1.0,
+            1.0,
+            255.0
+          ],
+          "length": 0.30000001192092896,
+          "style": "Box/Image",
+          "width": 0.30000001192092896
+        },
+        "bottom": 1476,
+        "builtin": "2024 Crescendo",
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
         "window": {
           "visible": true
         }

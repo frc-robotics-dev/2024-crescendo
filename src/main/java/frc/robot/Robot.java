@@ -30,28 +30,27 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends LoggedRobot {
-    private final double loopPeriodWatchdogSecs = 0.2;
-
-    private final LoggedJVM loggedJVM = new LoggedJVM();
     private final RobotContainer robotContainer;
+    private final LoggedJVM loggedJVM = new LoggedJVM();
+
+    private final double loopPeriodWatchdogSecs = 0.2;
     
     public Robot() {
-        Logger.recordMetadata("ProjectName", "FF2024_" + Constants.getRobot().name().toUpperCase()); // Set a metadata value
+        // Record metadata
+        Logger.recordMetadata("ProjectName", "2024-" + Constants.getRobot());
 
         // Set up data receivers & replay source
         switch (Constants.getMode()) {
-            case REAL:
+            case REAL -> {
                 // Running on real robot, log to USB stick
                 Logger.addDataReceiver(new WPILOGWriter("/media/sda1/logs"));
                 Logger.addDataReceiver(new NT4Publisher());
-                break;
-
-            case SIM:
+            }
+            case SIM -> {
                 // Running a physics simulator, log to NT
                 Logger.addDataReceiver(new NT4Publisher());
-                break;
-
-            case REPLAY:
+            }
+            case REPLAY -> {
                 // Replaying a log, set up replay source
                 setUseTiming(false); // Run as fast as possible
 
@@ -60,7 +59,7 @@ public class Robot extends LoggedRobot {
 
                 Logger.setReplaySource(new WPILOGReader(inPath));
                 Logger.addDataReceiver(new WPILOGWriter(outPath));
-                break;
+            }
         }
 
         // Disable unnecessary logging
