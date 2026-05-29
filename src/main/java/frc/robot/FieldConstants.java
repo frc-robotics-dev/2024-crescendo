@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -35,5 +36,27 @@ public class FieldConstants {
 
     public static class Lines {
         public static final double blueInitLineX = Units.inchesToMeters(156.8); // Alliance wall To init line
+    }
+
+    public static class WingNotes {
+        public static final Translation2d blueAmpSide = new Translation2d();
+        public static final Translation2d blueCenter = new Translation2d();
+        public static final Translation2d blueSourceSide = new Translation2d();
+    }
+
+    public static class CenterlineNotes {
+        public static final Translation2d ampSide = new Translation2d();
+        public static final Translation2d ampMid = new Translation2d();
+        public static final Translation2d center = new Translation2d();
+        public static final Translation2d sourceMid = new Translation2d();
+        public static final Translation2d sourceSide = new Translation2d();
+    }
+
+    public static class Speaker {
+
+    }
+
+    public static class Amp {
+        public static final Pose2d blue = getTagPose2d(6);
     }
 }

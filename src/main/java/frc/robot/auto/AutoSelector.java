@@ -1,7 +1,7 @@
 package frc.robot.auto;
 
 import frc.lib.auto.pathplanner.PathPlannerUtil;
-import frc.robot.auto.autos.TestAuto;
+import frc.robot.auto.autos.ScorePreloadAndDriveStraight;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.viz.GameViz;
 import frc.robot.viz.SimConstants;
@@ -39,7 +39,7 @@ public class AutoSelector {
         // Configure autos
         AutoCommands autoCommands = new AutoCommands(drive);
 
-        routineChooser.addDefaultOption("Test Auto", new TestAuto(drive));
+        routineChooser.addDefaultOption("Do Nothing", new ScorePreloadAndDriveStraight(drive, autoCommands));
     }
 
     public void startAuto() {
