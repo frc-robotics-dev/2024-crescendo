@@ -22,10 +22,6 @@ public class FieldConstants {
         return DriverStation.getAlliance().orElse(Alliance.Blue);
     }
 
-    public static boolean isRed() {
-        return getAlliance() == Alliance.Red;
-    }
-
     public static Pose2d getTagPose2d(int tagId) {
         return
             aprilTagFieldLayout
@@ -35,7 +31,7 @@ public class FieldConstants {
     }
 
     public static class Lines {
-        public static final double blueInitLineX = Units.inchesToMeters(156.8); // Alliance wall To init line
+        public static final double blueInitLineX = Units.inchesToMeters(156.8);
     }
 
     public static class WingNotes {

@@ -14,7 +14,7 @@ import lombok.experimental.ExtensionMethod;
 import java.util.Optional;
 
 import frc.lib.io.JoystickUtil;
-import frc.robot.FieldConstants;
+import frc.lib.math.AllianceFlipUtil;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import org.littletonrobotics.junction.Logger;
@@ -146,9 +146,7 @@ public class TeleopDriveCommand extends Command {
         drive.runVelocity(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 speeds,
-                FieldConstants.isRed()
-                    ? drive.getRotation().plus(Rotation2d.kPi)
-                    : drive.getRotation()));
+                AllianceFlipUtil.apply(drive.getRotation())));
     }
 
     private void lockHeadingIfRotationStopped(boolean isRotating) {

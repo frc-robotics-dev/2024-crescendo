@@ -112,7 +112,7 @@ public class RobotContainer {
 
         // Create auto requirements
         autoChooser = new AutoSelector(drive, gameViz);
-        warmupExecutor = new WarmupExecutor(drive);
+        warmupExecutor = new WarmupExecutor();
 
         // Initialize commands
         teleopDriveCommand = new TeleopDriveCommand(drive, driverXbox);
@@ -141,12 +141,12 @@ public class RobotContainer {
         resetRobotRotation
             .onTrue(
                 Commands.runOnce(() -> drive.setAngle(AllianceFlipUtil.apply(Rotation2d.kZero)))
-                    .withName("Reset Robot Rotation"));
+                    .withName("Resetting Robot Rotation"));
 
         xWheels
             .onTrue(
                 Commands.runOnce(drive::stopWithX)
-                    .withName("Stop With X"));
+                    .withName("Stopping With X"));
     }
 
     public void robotPeriodic() {
@@ -166,7 +166,6 @@ public class RobotContainer {
     }
 
     public void disabledPeriodic() {
-        autoChooser.updateAutoSelection();
         warmupExecutor.update();
     }
 
@@ -180,7 +179,7 @@ public class RobotContainer {
 
     public void simulationInit() {
         if (Constants.usingMapleSim) {
-            for (int i = 0; i < 2; i++) { // Do twice to counteract MapleSim arena initialization effects
+            for (int i = 0; i < 10; i++) { // Do twice to counteract MapleSim arena initialization effects
                 drive.setPose(AllianceFlipUtil.apply(new Pose2d(1.889, 4.002, Rotation2d.kZero)));
             }
         }

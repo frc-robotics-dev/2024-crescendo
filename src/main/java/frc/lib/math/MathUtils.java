@@ -6,7 +6,6 @@ import edu.wpi.first.math.MathUtil;
 
 /**
  * Miscellaneous math utility functions.
- * 
  * @see {@link MathUtil} for more common math utility functions.
  */
 public final class MathUtils {

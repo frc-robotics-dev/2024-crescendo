@@ -24,7 +24,7 @@ public class SparkUtil {
         if (config instanceof SparkFlexConfig) { // Spark Flex uses quadrature internal encoder
             config
                 .encoder
-                    .quadratureMeasurementPeriod(5)
+                    .quadratureMeasurementPeriod(4)
                     .quadratureAverageDepth(2);
         } else { // Spark Max uses hall-effect internal encoders, with UVW signal output
             config

@@ -109,14 +109,8 @@ public class DriveToPose extends Command {
 
     @Override
     public boolean isFinished() {
-        double distanceError =
-            drive
-                .getPose()
-                .getTranslation()
-                .getDistance(targetPose.getTranslation());
-
         if (isWaypoint) {
-            return distanceError < xyTolerance;
+            return drive.getPose().getTranslation().getDistance(targetPose.getTranslation()) < xyTolerance;
         } else {
             return xController.atGoal() && yController.atGoal() && thetaController.atGoal();
         }

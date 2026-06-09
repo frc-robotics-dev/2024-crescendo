@@ -40,10 +40,6 @@ public class DriveConstants {
     public static final PIDConfig pathplannerThetaPID = new PIDConfig(3, 0, 0);
     public static final PathConstraints pathplannerConstraints;
 
-    public static final PIDConfig blineLinearPID = new PIDConfig(5, 0, 0.5);
-    public static final PIDConfig blineThetaPID = new PIDConfig(3, 0, 0);
-    public static final PIDConfig blineCtePID = new PIDConfig(2, 0, 0);
-
     public static final double aimTolerance = Units.degreesToRadians(2.5);
 
     static {

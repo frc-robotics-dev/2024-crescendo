@@ -3,7 +3,6 @@ package frc.robot.auto;
 import java.io.File;
 
 import frc.lib.auto.pathplanner.PathPlannerUtil;
-import frc.robot.subsystems.drive.Drive;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -12,16 +11,12 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public final class WarmupExecutor {
-    private final Drive drive;
-
     private final String pathPlannerPathSuffix = ".path";
 
     private final int maxWarmupCycles = 50; // ~1 sec at 20ms loop
     private int warmupCycles = 0;
 
-    public WarmupExecutor(Drive drive) {
-        this.drive = drive;
-    }
+    public WarmupExecutor() {}
 
     public void initialize() {
         // Warmup PathPlanner cmds

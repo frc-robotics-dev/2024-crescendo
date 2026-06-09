@@ -16,34 +16,43 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class AutoSelector {
-    private final Drive drive;
+public class AutoSelector extends LoggedDashboardChooser<AutoRoutine> {
     private final GameViz gameViz;
 
-    private final LoggedDashboardChooser<AutoRoutine> routineChooser = new LoggedDashboardChooser<>("Auto");
-
     private Command autoCommand;
-    private AutoRoutine lastSelectedAuto;
 
-    public AutoSelector(
-        Drive drive,
-        GameViz gameViz
-    ) {
-        this.drive = drive;
+    public AutoSelector(Drive drive, GameViz gameViz) {
+        super("Auto");
+
         this.gameViz = gameViz;
 
         // Configure PathPlanner
         PathPlannerUtil.configureAutoBuilder(drive);
         Pathfinding.ensureInitialized();
 
+        // Update trajectory when selection changes
+        onChange(selected -> {
+            if (selected == null) {
+                logTrajectory();
+                return;
+            }
+
+            Pose2d[] trajectoryPoses = selected.getPoses();
+
+            drive.setPose(trajectoryPoses[0]); // Set drive pose to trajectory start
+            logTrajectory(trajectoryPoses);
+        });
+
         // Configure autos
         AutoCommands autoCommands = new AutoCommands(drive);
 
-        routineChooser.addDefaultOption("Do Nothing", new ScorePreloadAndDriveStraight(drive, autoCommands));
+        addDefaultOption(
+            "Score Preload, Drive Straight",
+            new ScorePreloadAndDriveStraight(drive, autoCommands));
     }
 
     public void startAuto() {
-        AutoRoutine selectedAuto = routineChooser.get();
+        AutoRoutine selectedAuto = get();
 
         if (selectedAuto == null) {
             return;
@@ -59,22 +68,6 @@ public class AutoSelector {
         }
 
         CommandScheduler.getInstance().schedule(autoCommand);
-    }
-
-    public void updateAutoSelection() {
-        final AutoRoutine selectedAuto = routineChooser.get();
-
-        if (selectedAuto == null) {
-            logTrajectory(); // Clear poses
-
-        } else if (selectedAuto != lastSelectedAuto) {
-            Pose2d[] trajectoryPoses = selectedAuto.getPoses();
-
-            drive.setPose(trajectoryPoses[0]); // Set drive pose to trajectory start
-            logTrajectory(trajectoryPoses);
-        }
-
-        lastSelectedAuto = selectedAuto;
     }
 
     public void cancelAuto() {

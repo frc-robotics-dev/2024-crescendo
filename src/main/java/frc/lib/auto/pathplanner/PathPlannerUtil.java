@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import frc.robot.FieldConstants;
+import frc.lib.math.AllianceFlipUtil;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import org.json.simple.parser.ParseException;
@@ -42,7 +42,7 @@ public final class PathPlannerUtil {
                     DriveConstants.pathplannerThetaPID.toPathPlannerConstraints()
                 ),
                 config,
-                FieldConstants::isRed,
+                AllianceFlipUtil::shouldFlip,
                 drive);
 
         } catch (IOException | ParseException e) {

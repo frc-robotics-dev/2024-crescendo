@@ -1,7 +1,5 @@
 package frc.lib.math;
 
-import java.util.function.UnaryOperator;
-
 import frc.lib.util.Zone;
 import frc.robot.FieldConstants;
 
@@ -11,24 +9,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class AllianceFlipUtil {
-    private static boolean override;
-
     private AllianceFlipUtil() {}
 
-    private static boolean shouldFlip() {
-        return FieldConstants.isRed() || override;
-    }
-
-    /** Applies a flip without depending on the current alliance. */
-    public static <T> T flip(UnaryOperator<T> flipFunction, T blueValue) {
-        try {
-            override = true;
-            return flipFunction.apply(blueValue);
-        } finally {
-            override = false;
-        }
+    public static boolean shouldFlip() {
+        return FieldConstants.getAlliance() == Alliance.Red;
     }
 
     public static double applyX(double x) {

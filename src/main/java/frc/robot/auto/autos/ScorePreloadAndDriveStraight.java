@@ -30,7 +30,7 @@ public class ScorePreloadAndDriveStraight implements AutoRoutine {
 
     @Override
     public Pose2d[] getPoses() {
-        return new Pose2d[0];
+        return new Pose2d[] { drive.getPose() };
     }
 
     private Command driveBack() {
