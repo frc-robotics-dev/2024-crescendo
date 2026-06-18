@@ -25,4 +25,8 @@ public record FFConfig(
     public ArmFeedforward getArmFF() {
         return new ArmFeedforward(kS(), kG(), kV(), kA());
     }
+
+    public double calculateArmFF() {
+        return getArmFF().calculate(kG, kA);
+    }
 }

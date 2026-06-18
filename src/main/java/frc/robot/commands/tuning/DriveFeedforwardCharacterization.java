@@ -50,23 +50,24 @@ public class DriveFeedforwardCharacterization extends Command {
     @Override
     public void execute() {
         switch (currentState) {
-            case ALIGNING:
+            case ALIGNING -> {
                 drive.runCharacterization(0.0);
                 
-                if (timer.hasElapsed(ffStartDelaySec)) {
-                    timer.restart();
-                    currentState = CharacterizationState.CHARACTERIZING;
+                if (!timer.hasElapsed(ffStartDelaySec)) {
+                    return;
                 }
-                break;
-
-            case CHARACTERIZING:
+                
+                timer.restart();
+                currentState = CharacterizationState.CHARACTERIZING;
+            }
+            case CHARACTERIZING -> {
                 double voltage = timer.get() * ffRampRateVoltsPerSec;
 
                 drive.runCharacterization(voltage);
 
                 velocitySamples.add(drive.getFFCharacterizationVelocityRotPerSec());
                 voltageSamples.add(voltage);
-                break;
+            }
         }
     }
 

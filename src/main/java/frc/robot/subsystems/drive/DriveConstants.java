@@ -1,24 +1,21 @@
 package frc.robot.subsystems.drive;
 
-import frc.lib.math.MathUtils;
+import frc.robot.Constants;
+import frc.robot.subsystems.drive.generated.TunerConstantsCompBot;
+import frc.robot.subsystems.drive.generated.TunerConstantsPracticeBot;
+import frc.robot.subsystems.drive.generated.TunerConstantsProgrammingBot;
 import frc.lib.motorcontrol.PIDConfig;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
-import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 public class DriveConstants {
     // Hardware / Configuration
-    public static final SwerveDrivetrainConstants drivetrainConstants = TunerConstants.DrivetrainConstants;
-    public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> frontLeft = TunerConstants.FrontLeft;
-    public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> frontRight = TunerConstants.FrontRight;
-    public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> backLeft = TunerConstants.BackLeft;
-    public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> backRight = TunerConstants.BackRight;
+    public static final SwerveDrivetrainConstants drivetrainConstants;
+    public static final SwerveModuleConstants<?, ?, ?>[] moduleConstants;
 
     public static final double trackWidthX;
     public static final double trackWidthY;
@@ -26,50 +23,63 @@ public class DriveConstants {
     public static final double bumperWidth = Units.inchesToMeters(35);
 
     public static final double driveBaseRadius;
-    public static final Translation2d centerOfRotation = Translation2d.kZero;
 
     public static final double maxLinearSpeed;
     public static final double maxOmega;
 
+    public static final double mass = Units.lbsToKilograms(87.4200862);
     public static final double wheelCOF = 1.9;
 
-    public static final Translation2d[] moduleTranslations;
+    public static final Translation2d centerOfRotation = Translation2d.kZero;
 
     // Swerve Control
-    public static final PIDConfig pathplannerLinearPID = new PIDConfig(0.25, 0, 0.1);
-    public static final PIDConfig pathplannerThetaPID = new PIDConfig(3, 0, 0);
-    public static final PathConstraints pathplannerConstraints;
-
-    public static final double aimTolerance = Units.degreesToRadians(2.5);
+    public static final PIDConfig linearPID = new PIDConfig(5, 0, 0);
+    public static final PIDConfig thetaPID = new PIDConfig(3, 0, 0);
+    public static final PIDConfig ctePID = new PIDConfig(2, 0, 0);
 
     static {
-        // Hardware / Configuration
-        Translation2d frontLeftModuleTranslation = new Translation2d(frontLeft.LocationX, frontLeft.LocationY);
-        Translation2d frontRightModuleTranslation = new Translation2d(frontRight.LocationX, frontRight.LocationY);
-        Translation2d backLeftModuleTranslation = new Translation2d(backLeft.LocationX, backLeft.LocationY);
-        Translation2d backRightModuleTranslation = new Translation2d(backRight.LocationX, backRight.LocationY);
+        // Get drivetrain & module constants from generated values (defaults to comp bot)
+        switch (Constants.robot) {
+            case PracticeBot -> {
+                drivetrainConstants = TunerConstantsPracticeBot.DrivetrainConstants;
+                moduleConstants =
+                    new SwerveModuleConstants<?, ?, ?>[] {
+                        TunerConstantsPracticeBot.FrontLeft,
+                        TunerConstantsPracticeBot.FrontRight,
+                        TunerConstantsPracticeBot.BackLeft,
+                        TunerConstantsPracticeBot.BackRight
+                    };
+            }
+            case ProgrammingBot -> {
+                drivetrainConstants = TunerConstantsProgrammingBot.DrivetrainConstants;
+                moduleConstants =
+                    new SwerveModuleConstants<?, ?, ?>[] {
+                        TunerConstantsProgrammingBot.FrontLeft,
+                        TunerConstantsProgrammingBot.FrontRight,
+                        TunerConstantsProgrammingBot.BackLeft,
+                        TunerConstantsProgrammingBot.BackRight
+                    };
+            }
+            default -> {
+                drivetrainConstants = TunerConstantsCompBot.DrivetrainConstants;
+                moduleConstants =
+                    new SwerveModuleConstants<?, ?, ?>[] {
+                        TunerConstantsCompBot.FrontLeft,
+                        TunerConstantsCompBot.FrontRight,
+                        TunerConstantsCompBot.BackLeft,
+                        TunerConstantsCompBot.BackRight
+                    };
+            }
+        }
 
-        trackWidthX = frontLeftModuleTranslation.getDistance(backLeftModuleTranslation);
-        trackWidthY = frontLeftModuleTranslation.getDistance(frontRightModuleTranslation);
+        // Calculate drivebase dimensions
+        trackWidthX = Math.abs(moduleConstants[0].LocationX - moduleConstants[2].LocationX); // front left to back left
+        trackWidthY = Math.abs(moduleConstants[0].LocationY - moduleConstants[1].LocationY); // front left to front right
 
-        driveBaseRadius =
-            MathUtils.max(
-                frontLeftModuleTranslation.getNorm(),
-                frontRightModuleTranslation.getNorm(),
-                backLeftModuleTranslation.getNorm(),
-                backRightModuleTranslation.getNorm());
+        driveBaseRadius = Math.hypot(trackWidthX / 2, trackWidthY / 2);
 
-        maxLinearSpeed = frontLeft.SpeedAt12Volts;
+        // Calculate kinematic limits
+        maxLinearSpeed = moduleConstants[0].SpeedAt12Volts;
         maxOmega = maxLinearSpeed / driveBaseRadius;
-
-        moduleTranslations =
-            new Translation2d[] {
-                frontLeftModuleTranslation,
-                frontRightModuleTranslation,
-                backLeftModuleTranslation,
-                backRightModuleTranslation};
-
-        // Swerve Control
-        pathplannerConstraints = new PathConstraints(maxLinearSpeed, maxLinearSpeed * 0.7, maxOmega, maxOmega * 0.7);
     }
 }

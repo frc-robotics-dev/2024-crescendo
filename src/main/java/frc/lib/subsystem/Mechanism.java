@@ -1,22 +1,15 @@
 package frc.lib.subsystem;
 
-import frc.lib.logging.LoggerUtil;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.logging.LoggerUtil;
 
 /** Wrapper class around WPILib's {@link SubsystemBase} class to create command-based subsystems with common boilerplate methods. */
 public abstract class Mechanism extends SubsystemBase {
-    protected LoggedNetworkBoolean coastOverride =
-        new LoggedNetworkBoolean("Coast Mode/" + getName(), false);
-
+    protected LoggedNetworkBoolean coastOverride = new LoggedNetworkBoolean("Coast Mode/" + getName(), false);
     private boolean inCoast = false;
-
-    protected final Alert coastModeWhileRunning =
-        new Alert(getName() + " cannot coast while running! Request ignored.", AlertType.kError);
 
     @Override
     public void periodic() {
@@ -25,12 +18,14 @@ public abstract class Mechanism extends SubsystemBase {
         // Set coast mode only when disabled and there is a change in the override
         boolean shouldCoast = coastOverride.get();
 
-        if (RobotState.isDisabled() && shouldCoast != inCoast) {
+        if (DriverStation.isDisabled() && shouldCoast != inCoast) {
             setBrakeMode(!shouldCoast);
             inCoast = shouldCoast;
         }
 
-        coastModeWhileRunning.set(RobotState.isEnabled() && coastOverride.get());
+        if (DriverStation.isEnabled() && coastOverride.get()) {
+            DriverStation.reportWarning(getName() + " cannot coast while running! Request ignored.", false);
+        }
     };
 
     protected abstract void setBrakeMode(boolean enabled);

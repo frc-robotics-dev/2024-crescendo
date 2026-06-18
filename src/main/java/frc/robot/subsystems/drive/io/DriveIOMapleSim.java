@@ -6,10 +6,7 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import frc.lib.swerve.MapleSimSwerveDrivetrain;
 import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.viz.SimConstants;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,21 +15,20 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import lombok.Getter;
 
-@SuppressWarnings("unchecked")
 public class DriveIOMapleSim extends DriveIOPhoenix {
     @Getter private final MapleSimSwerveDrivetrain drivetrain;
     private final Notifier simNotifier;
 
     private static final double kSimLoopPeriod = 0.002; // 2 ms
 
-    public DriveIOMapleSim(SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>... modules) {
+    public DriveIOMapleSim(SwerveModuleConstants<?, ?, ?>... modules) {
         super(
             MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
 
         drivetrain =
             new MapleSimSwerveDrivetrain(
                 Seconds.of(kSimLoopPeriod),
-                Kilograms.of(SimConstants.mass),
+                Kilograms.of(DriveConstants.mass),
                 Meters.of(DriveConstants.bumperLength),
                 Meters.of(DriveConstants.bumperWidth),
                 DCMotor.getKrakenX60Foc(1),
@@ -48,11 +44,7 @@ public class DriveIOMapleSim extends DriveIOPhoenix {
     }
 
     public DriveIOMapleSim() {
-        this(
-            DriveConstants.frontLeft,
-            DriveConstants.frontRight,
-            DriveConstants.backLeft,
-            DriveConstants.backRight);
+        this(DriveConstants.moduleConstants);
     }
 
     @Override

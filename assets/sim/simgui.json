@@ -30,11 +30,6 @@
       "/SmartDashboard/hey": "Scheduler"
     },
     "windows": {
-      "/SmartDashboard/Alerts": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Auto": {
         "window": {
           "visible": true

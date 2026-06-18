@@ -4,9 +4,11 @@ import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.simulation.VisionSystemSim;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 public class PracticeMatchViz extends GameViz {
     private int score = 0;
-    
+
     public PracticeMatchViz(Drive drive, VisionSystemSim visionViz) {
         super(drive, visionViz);
     }
@@ -19,7 +21,7 @@ public class PracticeMatchViz extends GameViz {
         Logger.recordOutput("PracticeMatchViz/Score", score);
     }
 
-    private boolean isMatchEnded() {
-        return false;
+    private boolean hasMatchEnded() {
+        return DriverStation.getMatchTime() >= SimConstants.teleopTimeSec;
     }
 }

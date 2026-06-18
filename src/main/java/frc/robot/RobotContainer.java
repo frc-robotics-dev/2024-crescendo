@@ -1,28 +1,34 @@
 package frc.robot;
 
-import frc.lib.math.AllianceFlipUtil;
-import frc.robot.Constants.Mode;
-import frc.robot.auto.AutoSelector;
-import frc.robot.auto.WarmupExecutor;
-import frc.robot.commands.TeleopDriveCommand;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.io.DriveIO;
-import frc.robot.subsystems.drive.io.DriveIOBasicSim;
-import frc.robot.subsystems.drive.io.DriveIOMapleSim;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.subsystems.vision.VisionConstants.VisionEstimateConsumer;
-import frc.robot.subsystems.vision.io.apriltagdetection.AprilTagIO;
-import frc.robot.subsystems.vision.io.apriltagdetection.AprilTagIOPhotonSim;
-import frc.robot.viz.GameViz;
-import frc.robot.viz.PracticeMatchViz;
+import static edu.wpi.first.units.Units.Volts;
+
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.simulation.VisionSystemSim;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Mode;
+import frc.robot.auto.AutoSelector;
+import frc.robot.auto.WarmupExecutor;
+import frc.robot.commands.TeleopDriveCommand;
+import frc.robot.commands.tuning.SysIdCommand;
+import frc.robot.commands.tuning.WheelRadiusCharacterization6328;
+import frc.robot.lib.BLine.FollowPath;
+import frc.robot.subsystems.apriltagvision.AprilTagVision;
+import frc.robot.subsystems.apriltagvision.AprilTagVision.VisionEstimateConsumer;
+import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
+import frc.robot.subsystems.apriltagvision.io.AprilTagIOPhotonSim;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.io.DriveIO;
+import frc.robot.subsystems.drive.io.DriveIOMapleSim;
+import frc.robot.util.AllianceFlipUtil;
+import frc.robot.viz.GameViz;
+import frc.robot.viz.PracticeMatchViz;
 
 /**
  * Main container for robot subsystems, commands, and controller bindings.
@@ -31,26 +37,38 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
     // Subsystems
     private Drive drive;
-    private Vision vision;
+    private AprilTagVision aprilTagVision;
+
+    // Path Builder
+    private final FollowPath.Builder pathBuilder;
 
     // Sim
     private final GameViz gameViz;
     private final VisionSystemSim visionViz = new VisionSystemSim("AprilTagSimulator");
 
     // Auto
-    private final AutoSelector autoChooser;
+    private final AutoSelector autoSelector;
     private final WarmupExecutor warmupExecutor;
 
+    // Test
+    private final LoggedDashboardChooser<Command> testSelector = new LoggedDashboardChooser<>("Test");
+    private Command testCommand;
+
     // Controllers
-    private final CommandXboxController driverXbox = new CommandXboxController(0);
+    private final CommandXboxController driver = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
 
     // Main Buttons
+    private final Trigger intakeNote = driver.leftTrigger();
+    private final Trigger shootNote = driver.rightTrigger();
+    private final Trigger aimAtSpeakerOrLobPos = driver.rightBumper();
+    private final Trigger alignAndGoToAmpPos = driver.leftBumper();
 
     // Overrides
-    private final Trigger toggleSlowMode = driverXbox.back();
-    private final Trigger toggleRobotRelative = driverXbox.start();
-    private final Trigger resetRobotRotation = driverXbox.povUp();
-    private final Trigger xWheels = driverXbox.povDown();
+    private final Trigger toggleSlowMode = driver.back();
+    private final Trigger toggleRobotRelative = driver.start();
+    private final Trigger resetRobotRotation = driver.povUp();
+    private final Trigger xWheels = driver.povDown();
 
     // Commands
     private final TeleopDriveCommand teleopDriveCommand;
@@ -62,7 +80,7 @@ public class RobotContainer {
     public RobotContainer() {
         // Initialize subsystems based on robot type
         if (Constants.getMode() != Mode.REPLAY) {
-            switch (Constants.getRobot()) {
+            switch (Constants.robot) {
                 case CompBot -> {
                     // Not implemented
                 }
@@ -73,23 +91,19 @@ public class RobotContainer {
                     // Not implemented
                 }
                 case SimBot -> {
-                    drive =
-                        new Drive(
-                            Constants.usingMapleSim
-                                ? new DriveIOMapleSim()
-                                : new DriveIOBasicSim());
+                    if (Constants.usingMapleSim) {
+                        drive = new Drive(new DriveIOMapleSim());
+                    }
 
                     visionViz.addAprilTags(FieldConstants.aprilTagFieldLayout);
 
-                    vision =
-                        new Vision(
+                    aprilTagVision =
+                        new AprilTagVision(
                             visionEstimateConsumer,
-                            new AprilTagIO[] {
-                                new AprilTagIOPhotonSim(VisionConstants.leftCameraConfig, visionViz),
-                                new AprilTagIOPhotonSim(VisionConstants.rightCameraConfig, visionViz),
-                                new AprilTagIOPhotonSim(VisionConstants.backCameraConfig, visionViz),
-                                new AprilTagIOPhotonSim(VisionConstants.backLeftCameraConfig, visionViz)
-                            }
+                            new AprilTagIOPhotonSim(AprilTagVisionConstants.leftCameraConfig, visionViz),
+                            new AprilTagIOPhotonSim(AprilTagVisionConstants.rightCameraConfig, visionViz),
+                            new AprilTagIOPhotonSim(AprilTagVisionConstants.backCameraConfig, visionViz),
+                            new AprilTagIOPhotonSim(AprilTagVisionConstants.backLeftCameraConfig, visionViz)
                         );
                 }
             }
@@ -100,9 +114,22 @@ public class RobotContainer {
             drive = new Drive(new DriveIO() {});
         }
 
-        if (vision == null) {
-            vision = new Vision(visionEstimateConsumer, new AprilTagIO[] {});
+        if (aprilTagVision == null) {
+            aprilTagVision = new AprilTagVision(visionEstimateConsumer);
         }
+
+        // Create path builder
+        pathBuilder =
+            new FollowPath.Builder(
+                drive,
+                drive::getPose,
+                drive::getRobotVelocity,
+                drive::runVelocity,
+                DriveConstants.linearPID.toPIDController(),
+                DriveConstants.thetaPID.toPIDController(),
+                DriveConstants.ctePID.toPIDController()
+            )
+            .withDefaultShouldFlip();
 
         // Create sim requirements
         gameViz =
@@ -111,23 +138,36 @@ public class RobotContainer {
                 : new GameViz(drive, visionViz);
 
         // Create auto requirements
-        autoChooser = new AutoSelector(drive, gameViz);
+        autoSelector = new AutoSelector(drive, gameViz);
         warmupExecutor = new WarmupExecutor();
 
         // Initialize commands
-        teleopDriveCommand = new TeleopDriveCommand(drive, driverXbox);
+        teleopDriveCommand = new TeleopDriveCommand(drive, driver);
 
-        // Configure default commands
-        drive.setDefaultCommand(teleopDriveCommand);
+        // Configure default commands, autos, button binds, tests
+        configureDefaultCommands();
 
-        // Configure button bindings
-        configureButtonBindings();
+        configureAutos();
+        configureMainButtonBindings();
+        configureOverrideButtonBindings();
+
+        configureTests();
     }
 
-    private void configureButtonBindings() {
-        // Bind main controls
+    private void configureDefaultCommands() {
+        drive.setDefaultCommand(teleopDriveCommand);
+    }
 
-        // Bind override controls
+    private void configureAutos() {
+        
+    }
+
+    private void configureMainButtonBindings() {
+        
+    }
+
+    private void configureOverrideButtonBindings() {
+        // Bind driver override controls
         toggleSlowMode
             .onTrue(
                 Commands.runOnce(teleopDriveCommand::toggleSlowMode)
@@ -140,25 +180,33 @@ public class RobotContainer {
 
         resetRobotRotation
             .onTrue(
-                Commands.runOnce(() -> drive.setAngle(AllianceFlipUtil.apply(Rotation2d.kZero)))
+                Commands.runOnce(() -> drive.resetAngle(AllianceFlipUtil.apply(Rotation2d.kZero)))
                     .withName("Resetting Robot Rotation"));
 
         xWheels
             .onTrue(
                 Commands.runOnce(drive::stopWithX)
                     .withName("Stopping With X"));
+
+        // Bind operator override controls
     }
 
-    public void robotPeriodic() {
-        
+    private void configureTests() {
+        testSelector.addDefaultOption(
+            "Wheel Radius Characterization 6328",
+            new WheelRadiusCharacterization6328(drive));
+
+        testSelector.addOption(
+            "Drive SysId",
+            new SysIdCommand(drive, volts -> drive.runCharacterization(volts.in(Volts))));
     }
 
-    public void autonomousInit() {        
-        autoChooser.startAuto();
+    public void autonomousInit() {
+        autoSelector.startAuto();
     }
 
-    public void teleopInit() {
-        autoChooser.cancelAuto();
+    public void autonomousExit() {
+        autoSelector.stopAuto();
     }
 
     public void disabledInit() {
@@ -170,18 +218,22 @@ public class RobotContainer {
     }
 
     public void testInit() {
-
+        testCommand = testSelector.get();
+        
+        if (testCommand != null) {
+            testCommand.schedule();
+        }
     }
 
-    public void testPeriodic() {
-
+    public void testExit() {
+        if (testCommand != null) {
+            testCommand.cancel();
+        }
     }
 
     public void simulationInit() {
         if (Constants.usingMapleSim) {
-            for (int i = 0; i < 10; i++) { // Do twice to counteract MapleSim arena initialization effects
-                drive.setPose(AllianceFlipUtil.apply(new Pose2d(1.889, 4.002, Rotation2d.kZero)));
-            }
+            drive.resetPose(AllianceFlipUtil.apply(new Pose2d(1.889, 4.002, Rotation2d.kZero)));
         }
     }
 

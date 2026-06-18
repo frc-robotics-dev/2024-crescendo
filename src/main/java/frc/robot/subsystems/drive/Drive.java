@@ -1,11 +1,12 @@
 package frc.robot.subsystems.drive;
 
-import frc.lib.logging.LoggedTracer;
-import frc.lib.logging.LoggerUtil;
 import frc.lib.swerve.MapleSimSwerveDrivetrain;
 import frc.robot.subsystems.drive.io.DriveIO;
 import frc.robot.subsystems.drive.io.DriveIOInputsAutoLogged;
 import frc.robot.subsystems.drive.io.DriveIOMapleSim;
+import frc.lib.logging.LoggedTracer;
+import frc.lib.logging.LoggerUtil;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
@@ -62,11 +63,11 @@ public class Drive extends SubsystemBase {
     }
 
     // Setters
-    public void setPose(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         io.setPose(pose);
     }
 
-    public void setAngle(Rotation2d rotation) {
+    public void resetAngle(Rotation2d rotation) {
         io.setAngle(rotation);
     }
 
@@ -77,10 +78,6 @@ public class Drive extends SubsystemBase {
     // Control Methods
     public void runVelocity(ChassisSpeeds speeds) {
         io.runVelocity(speeds);
-    }
-
-    public void runVelocity(ChassisSpeeds speeds, double[] moduleForcesX, double[] moduleForcesY) {
-        io.runVelocity(speeds, moduleForcesX, moduleForcesY);
     }
 
     public void runCharacterization(double output) {

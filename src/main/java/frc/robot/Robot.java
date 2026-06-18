@@ -2,10 +2,6 @@ package frc.robot;
 
 import java.lang.reflect.Field;
 
-import frc.lib.logging.LoggedJVM;
-import frc.lib.logging.LoggedTracer;
-import frc.lib.util.Elastic;
-
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.Arena2024Crescendo;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -28,6 +24,8 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.logging.LoggedJVM;
+import frc.lib.logging.LoggedTracer;
 
 public class Robot extends LoggedRobot {
     private final RobotContainer robotContainer;
@@ -37,7 +35,7 @@ public class Robot extends LoggedRobot {
     
     public Robot() {
         // Record metadata
-        Logger.recordMetadata("ProjectName", "2024-" + Constants.getRobot());
+        Logger.recordMetadata("ProjectName", "2024-" + Constants.robot);
 
         // Set up data receivers & replay source
         switch (Constants.getMode()) {
@@ -114,8 +112,6 @@ public class Robot extends LoggedRobot {
 
         // Put alliance color on dashboard
         Logger.recordOutput("Alliance Color", FieldConstants.getAlliance());
-        
-        robotContainer.robotPeriodic();
 
         // Record cycle time
         LoggedTracer.record("RobotPeriodic");
@@ -130,22 +126,22 @@ public class Robot extends LoggedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void teleopInit() {
-        robotContainer.teleopInit();
-
-        // Select Teleop Tab on Elastic
-        Elastic.selectTab("Teleop");
+    public void autonomousExit() {
+        robotContainer.autonomousExit();
     }
+
+    @Override
+    public void teleopInit() {}
 
     @Override
     public void teleopPeriodic() {}
 
     @Override
+    public void teleopExit() {}
+
+    @Override
     public void disabledInit() {
         robotContainer.disabledInit();
-
-        // Select Autonomous Tab on Elastic
-        Elastic.selectTab("Autonomous");
     }
 
     @Override
@@ -154,14 +150,18 @@ public class Robot extends LoggedRobot {
     }
 
     @Override
+    public void disabledExit() {}
+
+    @Override
     public void testInit() {
         robotContainer.testInit();
     }
 
     @Override
-    public void testPeriodic() {
-        robotContainer.testPeriodic();
-    }
+    public void testPeriodic() {}
+
+    @Override
+    public void testExit() {}
 
     @Override
     public void simulationInit() {

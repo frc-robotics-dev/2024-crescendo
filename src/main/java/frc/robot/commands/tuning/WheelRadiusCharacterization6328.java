@@ -51,20 +51,21 @@ public class WheelRadiusCharacterization6328 extends Command {
     @Override
     public void execute() {
         double speed = limiter.calculate(wheelRadiusMaxVelocity);
-        drive.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
+        drive.runVelocity(new ChassisSpeeds(0, 0, speed));
 
         switch (currentState) {
-            case ORIENTING:
-                if (timer.hasElapsed(orientDuration)) {
-                    charState.positions = drive.getWheelRadiusCharacterizationPositionsRad();
-                    charState.lastAngle = drive.getGyroRotation();
-                    charState.gyroDelta = 0.0;
-
-                    currentState = CharacterizationState.MEASURING;
+            case ORIENTING -> {
+                if (!timer.hasElapsed(orientDuration)) {
+                    return;
                 }
-                break;
 
-            case MEASURING:
+                charState.positions = drive.getWheelRadiusCharacterizationPositionsRad();
+                charState.lastAngle = drive.getGyroRotation();
+                charState.gyroDelta = 0.0;
+
+                currentState = CharacterizationState.MEASURING;
+            }
+            case MEASURING -> {
                 Rotation2d gyroRotation = drive.getGyroRotation();
 
                 charState.gyroDelta += Math.abs(gyroRotation.minus(charState.lastAngle).getRadians());
@@ -76,7 +77,7 @@ public class WheelRadiusCharacterization6328 extends Command {
 
                 Logger.recordOutput("Drive/WheelDelta", wheelDelta);
                 Logger.recordOutput("Drive/WheelRadius", wheelRadius);
-                break;
+            }
         }
     }
 

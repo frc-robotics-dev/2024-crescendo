@@ -58,29 +58,27 @@ public class DriveIOPhoenix extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     }
 
     public DriveIOPhoenix() {
-        this(
-            DriveConstants.frontLeft,
-            DriveConstants.frontRight,
-            DriveConstants.backLeft,
-            DriveConstants.backRight);
+        this(DriveConstants.moduleConstants);
     }
 
     @Override
     public void updateInputs(DriveIOInputs inputs) {
         // Refresh all signals
-        BaseStatusSignal.refreshAll(gyroYaw);
         BaseStatusSignal.refreshAll(drivePositionSignals);
         BaseStatusSignal.refreshAll(driveVelocitySignals);
+        BaseStatusSignal.refreshAll(gyroYaw);
 
         // Update drive inputs
         inputs.fromSwerveDriveState(super.getStateCopy());
         
-        inputs.gyroAngle = Rotation2d.fromDegrees(gyroYaw.getValueAsDouble());
-
         for (int i = 0; i < 4; i++) {
-            inputs.drivePositionsRad[i] = Units.rotationsToRadians(drivePositionSignals[i].getValueAsDouble());
-            inputs.driveVelocitiesRadPerSec[i] = Units.rotationsToRadians(driveVelocitySignals[i].getValueAsDouble());
+            inputs.drivePositionsRad[i] =
+                Units.rotationsToRadians(drivePositionSignals[i].getValueAsDouble());
+
+            inputs.driveVelocitiesRadPerSec[i] =
+                Units.rotationsToRadians(driveVelocitySignals[i].getValueAsDouble());
         }
+        inputs.gyroAngle = Rotation2d.fromDegrees(gyroYaw.getValueAsDouble());
     }
 
     @Override
@@ -117,15 +115,6 @@ public class DriveIOPhoenix extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     @Override
     public void runVelocity(ChassisSpeeds speeds) {
         super.setControl(APPLY_ROBOT_SPEEDS.withSpeeds(speeds));
-    }
-
-    @Override
-    public void runVelocity(ChassisSpeeds speeds, double[] moduleForcesX, double[] moduleForcesY) {
-        super.setControl(
-            APPLY_ROBOT_SPEEDS
-                .withSpeeds(speeds)
-                .withWheelForceFeedforwardsX(moduleForcesX)
-                .withWheelForceFeedforwardsY(moduleForcesY));
     }
 
     @Override

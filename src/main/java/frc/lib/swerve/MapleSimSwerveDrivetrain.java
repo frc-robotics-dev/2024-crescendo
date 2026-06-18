@@ -2,9 +2,7 @@ package frc.lib.swerve;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -37,7 +35,6 @@ import org.ironmaple.simulation.motorsims.SimulatedMotorController;
  *
  * <p>It replaces the {@link com.ctre.phoenix6.swerve.SimSwerveDrivetrain} class.
  */
-@SuppressWarnings({"unused", "unchecked"})
 public class MapleSimSwerveDrivetrain {
     private final Pigeon2SimState pigeonSim;
     private final SimSwerveModule[] simModules;
@@ -71,7 +68,7 @@ public class MapleSimSwerveDrivetrain {
         Translation2d[] moduleLocations,
         Pigeon2 pigeon,
         SwerveModule<TalonFX, TalonFX, CANcoder>[] modules,
-        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>... moduleConstants
+        SwerveModuleConstants<?, ?, ?>... moduleConstants
     ) {
         this.pigeonSim = pigeon.getSimState();
         simModules = new SimSwerveModule[moduleConstants.length];
@@ -126,11 +123,11 @@ public class MapleSimSwerveDrivetrain {
      * <h1>Represents the simulation of a single {@link SwerveModule}.</h1>
      */
     protected static class SimSwerveModule {
-        public final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> moduleConstant;
+        public final SwerveModuleConstants<?, ?, ?> moduleConstant;
         public final SwerveModuleSimulation moduleSimulation;
 
         public SimSwerveModule(
-            SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> moduleConstant,
+            SwerveModuleConstants<?, ?, ?> moduleConstant,
             SwerveModuleSimulation moduleSimulation,
             SwerveModule<TalonFX, TalonFX, CANcoder> module
         ) {
@@ -168,14 +165,12 @@ public class MapleSimSwerveDrivetrain {
     }
 
     public static class TalonFXMotorControllerWithRemoteCanCoderSim extends TalonFXMotorControllerSim {
-        private final int encoderId;
         private final CANcoderSimState remoteCancoderSimState;
 
         public TalonFXMotorControllerWithRemoteCanCoderSim(TalonFX talonFX, CANcoder cancoder) {
             super(talonFX);
 
             this.remoteCancoderSimState = cancoder.getSimState();
-            this.encoderId = cancoder.getDeviceID();
         }
 
         @Override

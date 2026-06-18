@@ -9,17 +9,16 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import lombok.experimental.ExtensionMethod;
 
 import java.util.Optional;
 
-import frc.lib.io.JoystickUtil;
-import frc.lib.math.AllianceFlipUtil;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.util.AllianceFlipUtil;
+import frc.lib.geometry.GeomUtil;
+
 import org.littletonrobotics.junction.Logger;
 
-@ExtensionMethod(JoystickUtil.class)
 public class TeleopDriveCommand extends Command {
     private final Drive drive;
     private final CommandXboxController xboxController;
@@ -30,6 +29,7 @@ public class TeleopDriveCommand extends Command {
     private final double headingHoldDelay = 0.25;
     private final Timer headingHoldTimer = new Timer();
 
+    private final double joystickDeadband = 0.2;
     private final double translationDeadband = 0.02;
     private final double omegaDeadband = 0.05;
 
@@ -64,8 +64,8 @@ public class TeleopDriveCommand extends Command {
     @Override
     public void execute() {
         // Get driver input velocities
-        Translation2d driverLinearVelocity = xboxController.getLinearVelocityFromJoysticks();
-        double driverOmega = xboxController.getOmegaFromJoysticks();
+        Translation2d driverLinearVelocity = getLinearVelocityFromJoysticks();
+        double driverOmega = getOmegaFromJoysticks();
 
         // Apply slow mode if necessary
         double translationScalar = slowMode ? 0.25 : 1.0;
@@ -97,25 +97,22 @@ public class TeleopDriveCommand extends Command {
 
         // Apply state
         switch (currentState) {
-            case FIELD_RELATIVE:
+            case FIELD_RELATIVE -> {
                 lockHeadingIfRotationStopped(isRotating);
                 runFieldRelativeVelocity(speeds);
-                break;
-
-            case FIELD_RELATIVE_HEADING_HOLD:
+            }
+            case FIELD_RELATIVE_HEADING_HOLD -> {
                 double omegaCorrection = headingHoldController.calculate(drive.getRotation().getRadians(), headingSetpoint.get().getRadians());
                 speeds.omegaRadiansPerSecond = MathUtil.clamp(omegaCorrection, -DriveConstants.maxOmega, DriveConstants.maxOmega);
 
                 runFieldRelativeVelocity(speeds);
-                break;
-
-            case ROBOT_RELATIVE:
+            }
+            case ROBOT_RELATIVE -> {
                 drive.runVelocity(speeds);
-                break;
-
-            case IDLE:
+            }
+            case IDLE -> {
                 drive.stop();
-                break;
+            }
         }
 
         // Log data
@@ -159,5 +156,36 @@ public class TeleopDriveCommand extends Command {
                 headingSetpoint = Optional.of(drive.getRotation());
             }
         }
+    }
+
+    private Translation2d getLinearVelocityFromJoysticks() {
+        // Get joystick input
+        double driverX = -xboxController.getLeftY();
+        double driverY = -xboxController.getLeftX();
+
+        // Apply deadband
+        double linearMagnitude = MathUtil.applyDeadband(Math.hypot(driverX, driverY), joystickDeadband);
+        Rotation2d linearDirection = new Rotation2d(Math.atan2(driverY, driverX));
+
+        // Square magnitude for more precise control
+        linearMagnitude = linearMagnitude * linearMagnitude;
+
+        // Return new linear velocity
+        return
+            GeomUtil
+                .toPose2d(linearDirection)
+                .plus(GeomUtil.toTransform2d(linearMagnitude, 0.0))
+                .getTranslation();
+    }
+
+    private double getOmegaFromJoysticks() {
+        // Get joystick input
+        double driverOmega = -xboxController.getRightX();
+
+        // Apply deadband
+        double omega = MathUtil.applyDeadband(driverOmega, joystickDeadband);
+
+        // Square magnitude for more precise control & return new angular velocity
+        return Math.copySign(omega * omega, omega);
     }
 }

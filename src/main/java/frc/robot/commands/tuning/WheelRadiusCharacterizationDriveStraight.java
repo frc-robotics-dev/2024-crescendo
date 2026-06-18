@@ -2,50 +2,76 @@ package frc.robot.commands.tuning;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.function.BooleanSupplier;
 
-import frc.lib.logging.LoggedTunableNumber;
 import frc.robot.subsystems.drive.Drive;
-
+import frc.lib.logging.LoggedTunableNumber;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * Measures the robot's wheel radius by driving straight and comparing actual vs reported distance.
- * Measure the actual distance traveled using a measuring tape.
- * See https://www.frc5712.com/swerve-calibration.
+ * @apiNote Measure the actual distance traveled using a measuring tape.
+ *          See https://www.frc5712.com/swerve-calibration.
  */
 public class WheelRadiusCharacterizationDriveStraight extends Command {
     private final Drive drive;
+    private final BooleanSupplier buttonHeld;
     
     private final double driveSpeed = 0.5;
-
-    private final WheelRadiusCharacterizationState charState = new WheelRadiusCharacterizationState();
 
     private final LoggedTunableNumber actualDistanceInches =
         new LoggedTunableNumber(
             "WheelRadiusCharacterizationDriveStraight/ActualDistanceInches",
             0.0);
 
-    public WheelRadiusCharacterizationDriveStraight(Drive drive) {
+    private CharacterizationState currentState;
+    private final WheelRadiusCharacterizationState charState = new WheelRadiusCharacterizationState();
+
+    private enum CharacterizationState {
+        DRIVING,
+        WAITING_FOR_INPUT,
+        FINISHED
+    }
+
+    public WheelRadiusCharacterizationDriveStraight(Drive drive, BooleanSupplier buttonHeld) {
         this.drive = drive;
+        this.buttonHeld = buttonHeld;
 
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
+        currentState = CharacterizationState.DRIVING;
         charState.positions = drive.getWheelRadiusCharacterizationPositionsRad();
     }
 
     @Override
     public void execute() {
-        drive.runVelocity(new ChassisSpeeds(driveSpeed, 0.0, 0.0));
+        switch (currentState) {
+            case DRIVING -> {
+                if (!buttonHeld.getAsBoolean()) {
+                    drive.stop();
+                    currentState = CharacterizationState.WAITING_FOR_INPUT;
+                    return;
+                }
+                
+                drive.runVelocity(new ChassisSpeeds(driveSpeed, 0, 0));
+            }
+            case WAITING_FOR_INPUT -> {
+                if (actualDistanceInches.hasChanged(hashCode())) {
+                    currentState = CharacterizationState.FINISHED;
+                }
+            }
+            case FINISHED -> {}
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return currentState == CharacterizationState.FINISHED;
     }
 
     @Override

@@ -1,1 +1,0 @@
-Insert AdvantageScope 3D asset folders here.

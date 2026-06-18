@@ -49,7 +49,7 @@ public class FieldConstants {
     }
 
     public static class Speaker {
-
+        
     }
 
     public static class Amp {

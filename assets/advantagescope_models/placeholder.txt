@@ -1,0 +1,1 @@
+Insert AdvantageScope 3D asset folders here. Delete this file if there are models in the folder.
