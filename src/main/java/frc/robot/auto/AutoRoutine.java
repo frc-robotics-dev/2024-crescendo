@@ -11,4 +11,8 @@ public interface AutoRoutine {
     public default Pose2d getStartPose() {
         return getTrajectory()[0].getStartPose();
     }
+
+    public default String getName() {
+        return getClass().getSimpleName();
+    }
 }

@@ -55,20 +55,16 @@ public class RobotContainer {
     private Command testCommand;
 
     // Controllers
-    private final CommandXboxController driver = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
+    private final CommandXboxController driverXbox = new CommandXboxController(0);
+    private final CommandXboxController operatorXbox = new CommandXboxController(1);
 
     // Main Buttons
-    private final Trigger intakeNote = driver.leftTrigger();
-    private final Trigger shootNote = driver.rightTrigger();
-    private final Trigger aimAtSpeakerOrLobPos = driver.rightBumper();
-    private final Trigger alignAndGoToAmpPos = driver.leftBumper();
 
     // Overrides
-    private final Trigger toggleSlowMode = driver.back();
-    private final Trigger toggleRobotRelative = driver.start();
-    private final Trigger resetRobotRotation = driver.povUp();
-    private final Trigger xWheels = driver.povDown();
+    private final Trigger toggleSlowMode = driverXbox.back();
+    private final Trigger toggleRobotRelative = driverXbox.start();
+    private final Trigger resetRobotRotation = driverXbox.povUp();
+    private final Trigger xWheels = driverXbox.povDown();
 
     // Commands
     private final TeleopDriveCommand teleopDriveCommand;
@@ -142,7 +138,7 @@ public class RobotContainer {
         warmupExecutor = new WarmupExecutor();
 
         // Initialize commands
-        teleopDriveCommand = new TeleopDriveCommand(drive, driver);
+        teleopDriveCommand = new TeleopDriveCommand(drive, driverXbox);
 
         // Configure default commands, autos, button binds, tests
         configureDefaultCommands();

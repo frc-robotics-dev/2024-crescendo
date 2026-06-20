@@ -43,7 +43,7 @@ public class AutoSelector extends LoggedDashboardChooser<AutoRoutine> {
                 autoCommand = autoCommand.withTimeout(SimConstants.autoTimeSec);
             }
 
-            autoCommand.setName(selected.getClass().getSimpleName());
+            autoCommand.setName(selected.getName());
         });
     }
 
