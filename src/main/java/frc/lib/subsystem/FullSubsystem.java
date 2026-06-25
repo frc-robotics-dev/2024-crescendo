@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.logging.LoggerUtil;
 
 /** Wrapper class around WPILib's {@link SubsystemBase} class to create command-based subsystems with common boilerplate methods. */
-public abstract class Mechanism extends SubsystemBase {
-    protected LoggedNetworkBoolean coastOverride = new LoggedNetworkBoolean("Coast Mode/" + getName(), false);
+public abstract class FullSubsystem extends SubsystemBase {
+    private LoggedNetworkBoolean coastOverride = new LoggedNetworkBoolean("Coast Mode/" + getName(), false);
     private boolean inCoast = false;
 
     @Override
@@ -29,5 +29,5 @@ public abstract class Mechanism extends SubsystemBase {
     };
 
     protected abstract void setBrakeMode(boolean enabled);
-    public abstract void stop();
+    protected abstract void stop();
 }

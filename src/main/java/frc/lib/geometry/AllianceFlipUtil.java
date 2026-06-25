@@ -1,7 +1,6 @@
-package frc.robot.util;
+package frc.lib.geometry;
 
 import frc.robot.FieldConstants;
-import frc.lib.geometry.Zone;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;

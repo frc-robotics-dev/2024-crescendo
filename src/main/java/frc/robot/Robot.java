@@ -3,7 +3,6 @@ package frc.robot;
 import java.lang.reflect.Field;
 
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.seasonspecific.crescendo2024.Arena2024Crescendo;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -26,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.logging.LoggedJVM;
 import frc.lib.logging.LoggedTracer;
+import frc.robot.viz.MapleSimUtil;
 
 public class Robot extends LoggedRobot {
     private final RobotContainer robotContainer;
@@ -83,7 +83,7 @@ public class Robot extends LoggedRobot {
         RobotController.setBrownoutVoltage(6.0);
 
         // Configure sim
-        if (RobotBase.isSimulation()) {
+        if (RobotBase.isSimulation()) { 
             DriverStation.silenceJoystickConnectionWarning(true); // Silence joystick warnings in sim
 
             RoboRioSim.setTeamNumber(503);
@@ -91,7 +91,7 @@ public class Robot extends LoggedRobot {
             DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
             DriverStationSim.notifyNewData();
 
-            SimulatedArena.overrideInstance(new Arena2024Crescendo()); // Setup MapleSim arena
+            MapleSimUtil.initializeArena();
         }
 
         // Initialize RobotContainer
