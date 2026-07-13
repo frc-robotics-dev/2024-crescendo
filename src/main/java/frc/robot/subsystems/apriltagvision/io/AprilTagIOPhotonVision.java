@@ -47,8 +47,8 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
         }
     }
 
-    private Matrix<N3, N1> getEstimationStdDevs(Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
-        if (estimatedPose.isEmpty()) {
+    private Matrix<N3, N1> getEstimationStdDevs(Optional<EstimatedRobotPose> estimate, List<PhotonTrackedTarget> targets) {
+        if (estimate.isEmpty()) {
             return AprilTagVisionConstants.kSingleTagStdDevs;
         }
         
@@ -71,7 +71,7 @@ public class AprilTagIOPhotonVision implements AprilTagIO {
                     .get()
                     .toPose2d()
                     .getTranslation()
-                    .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
+                    .getDistance(estimate.get().estimatedPose.toPose2d().getTranslation());
         }
 
         if (numTags == 0) {

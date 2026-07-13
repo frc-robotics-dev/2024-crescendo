@@ -54,9 +54,9 @@ public class DriveIOMapleSim extends DriveIOPhoenix {
     }
 
     @Override
-    public void setPose(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         drivetrain.mapleSimDrive.setSimulationWorldPose(pose);
         Timer.delay(0.05); // wait for simulation to update
-        super.setPose(pose);
+        super.resetPose(pose);
     }
 }

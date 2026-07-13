@@ -126,11 +126,7 @@ public class MapleSimSwerveDrivetrain {
         public final SwerveModuleConstants<?, ?, ?> moduleConstant;
         public final SwerveModuleSimulation moduleSimulation;
 
-        public SimSwerveModule(
-            SwerveModuleConstants<?, ?, ?> moduleConstant,
-            SwerveModuleSimulation moduleSimulation,
-            SwerveModule<TalonFX, TalonFX, CANcoder> module
-        ) {
+        public SimSwerveModule(SwerveModuleConstants<?, ?, ?> moduleConstant, SwerveModuleSimulation moduleSimulation, SwerveModule<TalonFX, TalonFX, CANcoder> module) {
             this.moduleConstant = moduleConstant;
             this.moduleSimulation = moduleSimulation;
 
@@ -139,7 +135,7 @@ public class MapleSimSwerveDrivetrain {
         }
     }
 
-    // Static utils classes
+    // Static utility classes
     public static class TalonFXMotorControllerSim implements SimulatedMotorController {
         public final int id;
         private final TalonFXSimState talonFXSimState;
@@ -150,12 +146,7 @@ public class MapleSimSwerveDrivetrain {
         }
 
         @Override
-        public Voltage updateControlSignal(
-            Angle mechanismAngle,
-            AngularVelocity mechanismVelocity,
-            Angle encoderAngle,
-            AngularVelocity encoderVelocity
-        ) {
+        public Voltage updateControlSignal(Angle mechanismAngle, AngularVelocity mechanismVelocity, Angle encoderAngle, AngularVelocity encoderVelocity) {
             talonFXSimState.setRawRotorPosition(encoderAngle);
             talonFXSimState.setRotorVelocity(encoderVelocity);
             talonFXSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
@@ -169,17 +160,12 @@ public class MapleSimSwerveDrivetrain {
 
         public TalonFXMotorControllerWithRemoteCanCoderSim(TalonFX talonFX, CANcoder cancoder) {
             super(talonFX);
-
+            
             this.remoteCancoderSimState = cancoder.getSimState();
         }
 
         @Override
-        public Voltage updateControlSignal(
-            Angle mechanismAngle,
-            AngularVelocity mechanismVelocity,
-            Angle encoderAngle,
-            AngularVelocity encoderVelocity
-        ) {
+        public Voltage updateControlSignal(Angle mechanismAngle, AngularVelocity mechanismVelocity, Angle encoderAngle, AngularVelocity encoderVelocity) {
             remoteCancoderSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage());
             remoteCancoderSimState.setRawPosition(mechanismAngle);
             remoteCancoderSimState.setVelocity(mechanismVelocity);
@@ -228,27 +214,23 @@ public class MapleSimSwerveDrivetrain {
 
         // Apply simulation-specific adjustments to module constants
         moduleConstants
-            // Disable encoder offsets
-            .withEncoderOffset(0)
-            // Disable motor inversions for drive and steer motors
-            .withDriveMotorInverted(false)
-            .withSteerMotorInverted(false)
-            // Disable CanCoder inversion
-            .withEncoderInverted(false)
-            // Adjust steer motor PID gains for simulation
-            .withSteerMotorGains(new Slot0Configs()
+            .withEncoderOffset(0) // Disable encoder offsets
+            .withDriveMotorInverted(false) // Disable motor inversions for drive motors
+            .withSteerMotorInverted(false) // Disable motor inversions for steer motors
+            .withEncoderInverted(false) // Disable CanCoder inversion
+            .withSteerMotorGains( // Adjust steer motor PID gains for simulation
+                new Slot0Configs()
                     .withKP(70)
                     .withKI(0)
                     .withKD(4.5)
                     .withKS(0)
                     .withKV(1.91)
                     .withKA(0)
-                    .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
+                    .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign)
+            )
             .withSteerMotorGearRatio(16.0)
-            // Adjust friction voltages
-            .withDriveFrictionVoltage(Volts.of(0.1))
-            .withSteerFrictionVoltage(Volts.of(0.05))
-            // Adjust steer inertia
-            .withSteerInertia(KilogramSquareMeters.of(0.05));
+            .withDriveFrictionVoltage(Volts.of(0.1)) // Adjust drive friction voltage
+            .withSteerFrictionVoltage(Volts.of(0.05)) // Adjust steer friction voltage
+            .withSteerInertia(KilogramSquareMeters.of(0.05)); // Adjust steer inertia
     }
 }

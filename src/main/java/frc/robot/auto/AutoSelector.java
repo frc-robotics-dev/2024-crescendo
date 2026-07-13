@@ -2,6 +2,7 @@ package frc.robot.auto;
 
 import frc.robot.lib.BLine.BLineField;
 import frc.robot.lib.BLine.Path;
+import frc.robot.lib.BLine.Path.Waypoint;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.viz.GameViz;
 import frc.robot.viz.SimConstants;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class AutoSelector extends LoggedDashboardChooser<AutoRoutine> {
+    private final Drive drive;
     private final GameViz gameViz;
 
     private Command autoCommand;
@@ -19,25 +21,27 @@ public class AutoSelector extends LoggedDashboardChooser<AutoRoutine> {
     public AutoSelector(Drive drive, GameViz gameViz) {
         super("Auto");
         
+        this.drive = drive;
         this.gameViz = gameViz;
 
         onChange(selected -> {
-            // Reset pose & update trajectory
+            // Update trajectory
             Path[] trajectory = selected.getTrajectory();
 
-            if (isTrajectoryEmpty(trajectory)) {
+            if (trajectory == null || trajectory.length == 0) { // If trajectory empty
                 clearTrajectory();
                 return;
             }
 
-            drive.resetPose(selected.getStartPose());
-            
             for (Path path : trajectory) {
                 BLineField.drawPath(gameViz.getField2d(), path);
             }
 
+            // Reset pose
+            drive.resetPose(selected.getStartPose());
+
             // Initialize command
-            autoCommand = selected.getCommand();
+            autoCommand = selected;
 
             if (RobotBase.isSimulation()) {
                 autoCommand = autoCommand.withTimeout(SimConstants.autoTimeSec);
@@ -62,10 +66,6 @@ public class AutoSelector extends LoggedDashboardChooser<AutoRoutine> {
     }
 
     private void clearTrajectory() {
-        BLineField.drawPath(gameViz.getField2d(), new Path());
-    }
-
-    private boolean isTrajectoryEmpty(Path... trajectory) {
-        return trajectory == null || trajectory.length == 0;
+        BLineField.drawPath(gameViz.getField2d(), new Path(new Waypoint(drive.getPose())));
     }
 }

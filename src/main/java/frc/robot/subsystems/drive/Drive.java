@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive;
 
 import frc.lib.swerve.MapleSimSwerveDrivetrain;
+import frc.robot.subsystems.apriltagvision.AprilTagVision.VisionEstimateConsumer;
 import frc.robot.subsystems.drive.io.DriveIO;
 import frc.robot.subsystems.drive.io.DriveIOInputsAutoLogged;
 import frc.robot.subsystems.drive.io.DriveIOMapleSim;
@@ -18,7 +19,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Drive extends SubsystemBase {
+public class Drive extends SubsystemBase implements VisionEstimateConsumer {
     private final DriveIO io;
     private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
 
@@ -64,13 +65,14 @@ public class Drive extends SubsystemBase {
 
     // Setters
     public void resetPose(Pose2d pose) {
-        io.setPose(pose);
+        io.resetPose(pose);
     }
 
     public void resetAngle(Rotation2d rotation) {
-        io.setAngle(rotation);
+        io.resetAngle(rotation);
     }
 
+    @Override
     public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs) {
         io.addVisionMeasurement(pose, timestamp, stdDevs);
     }

@@ -32,6 +32,6 @@ public class AprilTagVision extends SubsystemBase {
 
     @FunctionalInterface
     public interface VisionEstimateConsumer {
-        public void accept(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs);
+        public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs);
     }
 }

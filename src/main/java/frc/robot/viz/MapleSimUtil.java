@@ -9,4 +9,8 @@ public class MapleSimUtil {
     public static void initializeArena() {
         SimulatedArena.overrideInstance(new Arena2024Crescendo());
     }
+
+    public static void resetField() {
+        SimulatedArena.getInstance().resetFieldForAuto();
+    }
 }

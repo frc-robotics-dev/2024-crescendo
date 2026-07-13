@@ -7,13 +7,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class AllianceFlipUtil {
     private AllianceFlipUtil() {}
 
     public static boolean shouldFlip() {
-        return FieldConstants.getAlliance() == Alliance.Red;
+        return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
     }
 
     public static double applyX(double x) {

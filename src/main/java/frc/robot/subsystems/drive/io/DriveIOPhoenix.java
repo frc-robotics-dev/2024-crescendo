@@ -82,12 +82,12 @@ public class DriveIOPhoenix extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
     }
 
     @Override
-    public void setPose(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         super.resetPose(pose);
     }
 
     @Override
-    public void setAngle(Rotation2d angle) {
+    public void resetAngle(Rotation2d angle) {
         super.resetRotation(angle);
     }
 

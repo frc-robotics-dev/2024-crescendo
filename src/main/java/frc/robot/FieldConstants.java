@@ -5,8 +5,6 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * Contains various field dimensions and useful reference points. All units are in meters and poses
@@ -17,10 +15,6 @@ public class FieldConstants {
 
     public static final double fieldLength = aprilTagFieldLayout.getFieldLength();
     public static final double fieldWidth = aprilTagFieldLayout.getFieldWidth();
-
-    public static Alliance getAlliance() {
-        return DriverStation.getAlliance().orElse(Alliance.Blue);
-    }
 
     public static Pose2d getTagPose2d(int tagId) {
         return

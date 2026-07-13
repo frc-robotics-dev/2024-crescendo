@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 
 /** Class containing global configuration variables describing current robot and runtime mode. */
 public class Constants {
-    public static RobotType robot = RobotType.SimBot;
+    private static RobotType robot = RobotType.SimBot;
 
     public static final boolean usingMapleSim = true;
     public static final boolean isPracticeMatch = true;

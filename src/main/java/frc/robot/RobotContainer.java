@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.geometry.AllianceFlipUtil;
 import frc.robot.Constants.Mode;
+import frc.robot.auto.AutoRoutine;
 import frc.robot.auto.AutoSelector;
 import frc.robot.auto.WarmupExecutor;
 import frc.robot.commands.TeleopDriveCommand;
@@ -20,7 +21,6 @@ import frc.robot.commands.tuning.SysIdCommand;
 import frc.robot.commands.tuning.WheelRadiusCharacterization6328;
 import frc.robot.lib.BLine.FollowPath;
 import frc.robot.subsystems.apriltagvision.AprilTagVision;
-import frc.robot.subsystems.apriltagvision.AprilTagVision.VisionEstimateConsumer;
 import frc.robot.subsystems.apriltagvision.AprilTagVisionConstants;
 import frc.robot.subsystems.apriltagvision.io.AprilTagIOPhotonSim;
 import frc.robot.subsystems.drive.Drive;
@@ -55,28 +55,23 @@ public class RobotContainer {
     private Command testCommand;
 
     // Controllers
-    private final CommandXboxController driverXbox = new CommandXboxController(0);
-    private final CommandXboxController operatorXbox = new CommandXboxController(1);
+    private final CommandXboxController driver = new CommandXboxController(0);
 
     // Main Buttons
 
     // Overrides
-    private final Trigger toggleSlowMode = driverXbox.back();
-    private final Trigger toggleRobotRelative = driverXbox.start();
-    private final Trigger resetRobotRotation = driverXbox.povUp();
-    private final Trigger xWheels = driverXbox.povDown();
+    private final Trigger toggleSlowMode = driver.back();
+    private final Trigger toggleRobotRelative = driver.start();
+    private final Trigger resetRobotRotation = driver.povUp();
+    private final Trigger xWheels = driver.povDown();
 
     // Commands
     private final TeleopDriveCommand teleopDriveCommand;
-    
-    // Other
-    private final VisionEstimateConsumer visionEstimateConsumer =
-        (pose, timestamp, stdDevs) -> drive.addVisionMeasurement(pose, timestamp, stdDevs);
 
     public RobotContainer() {
         // Initialize subsystems based on robot type
         if (Constants.getMode() != Mode.REPLAY) {
-            switch (Constants.robot) {
+            switch (Constants.getRobot()) {
                 case CompBot -> {
                     // Not implemented
                 }
@@ -95,7 +90,7 @@ public class RobotContainer {
 
                     aprilTagVision =
                         new AprilTagVision(
-                            visionEstimateConsumer,
+                            drive,
                             new AprilTagIOPhotonSim(AprilTagVisionConstants.leftCameraConfig, visionViz),
                             new AprilTagIOPhotonSim(AprilTagVisionConstants.rightCameraConfig, visionViz),
                             new AprilTagIOPhotonSim(AprilTagVisionConstants.backCameraConfig, visionViz),
@@ -111,7 +106,7 @@ public class RobotContainer {
         }
 
         if (aprilTagVision == null) {
-            aprilTagVision = new AprilTagVision(visionEstimateConsumer);
+            aprilTagVision = new AprilTagVision(drive);
         }
 
         // Create path builder
@@ -138,7 +133,7 @@ public class RobotContainer {
         warmupExecutor = new WarmupExecutor();
 
         // Initialize commands
-        teleopDriveCommand = new TeleopDriveCommand(drive, driverXbox);
+        teleopDriveCommand = new TeleopDriveCommand(drive, driver);
 
         // Configure default commands, autos, button binds, tests
         configureDefaultCommands();

@@ -2,7 +2,6 @@ package frc.robot;
 
 import java.lang.reflect.Field;
 
-import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -35,7 +34,7 @@ public class Robot extends LoggedRobot {
     
     public Robot() {
         // Record metadata
-        Logger.recordMetadata("ProjectName", "2024-" + Constants.robot);
+        Logger.recordMetadata("ProjectName", "2024-" + Constants.getRobot());
 
         // Set up data receivers & replay source
         switch (Constants.getMode()) {
@@ -110,9 +109,6 @@ public class Robot extends LoggedRobot {
         // Log JVM info
         loggedJVM.update();
 
-        // Put alliance color on dashboard
-        Logger.recordOutput("Alliance Color", FieldConstants.getAlliance());
-
         // Record cycle time
         LoggedTracer.record("RobotPeriodic");
     }
@@ -165,7 +161,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void simulationInit() {
-        SimulatedArena.getInstance().resetFieldForAuto(); // Reset MapleSim field
+        MapleSimUtil.resetField();
 
         robotContainer.simulationInit();
     }

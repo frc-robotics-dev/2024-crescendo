@@ -34,9 +34,9 @@ public interface DriveIO {
 
     default void updateInputs(DriveIOInputs inputs) {}
 
-    default void setPose(Pose2d pose) {}
+    default void resetPose(Pose2d pose) {}
 
-    default void setAngle(Rotation2d angle) {}
+    default void resetAngle(Rotation2d angle) {}
 
     default void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs) {}
 

@@ -39,7 +39,7 @@ public class DriveConstants {
 
     static {
         // Get drivetrain & module constants from generated values (defaults to comp bot)
-        switch (Constants.robot) {
+        switch (Constants.getRobot()) {
             case PracticeBot -> {
                 drivetrainConstants = TunerConstantsPracticeBot.DrivetrainConstants;
                 moduleConstants =
