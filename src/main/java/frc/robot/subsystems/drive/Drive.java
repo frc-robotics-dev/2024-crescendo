@@ -23,8 +23,6 @@ public class Drive extends SubsystemBase implements VisionEstimateConsumer {
     private final DriveIO io;
     private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
 
-    private final DriveViz viz = new DriveViz();
-
     public Drive(DriveIO io) {
         this.io = io;
     }
@@ -35,8 +33,6 @@ public class Drive extends SubsystemBase implements VisionEstimateConsumer {
 
         io.updateInputs(inputs);
         Logger.processInputs("Drive", inputs);
-
-        viz.update(inputs);
 
         // Record cycle time
         LoggedTracer.record("Drive");

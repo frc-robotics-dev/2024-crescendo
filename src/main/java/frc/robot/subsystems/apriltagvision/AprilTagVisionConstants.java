@@ -20,9 +20,6 @@ public class AprilTagVisionConstants {
     public static final CameraConfig backCameraConfig =
         new CameraConfig("BackCamera", Transform3d.kZero);
 
-    public static final CameraConfig backLeftCameraConfig =
-        new CameraConfig("BackLeftCamera", Transform3d.kZero);
-
     public record CameraConfig(
         String name,
         Transform3d robotToCamera) {}

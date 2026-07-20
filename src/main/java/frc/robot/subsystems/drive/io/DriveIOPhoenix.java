@@ -4,7 +4,6 @@ import frc.lib.swerve.SwerveDriveCoast;
 import frc.robot.subsystems.drive.DriveConstants;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -23,13 +22,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
 
 public class DriveIOPhoenix extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements DriveIO {
     // Signals
     private final BaseStatusSignal[] drivePositionSignals = new BaseStatusSignal[4];
     private final BaseStatusSignal[] driveVelocitySignals = new BaseStatusSignal[4];
-    private final StatusSignal<Angle> gyroYaw;
 
     // Requests
     private final ApplyRobotSpeeds APPLY_ROBOT_SPEEDS =
@@ -46,8 +43,6 @@ public class DriveIOPhoenix extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
             TalonFX::new, TalonFX::new, CANcoder::new,
             DriveConstants.drivetrainConstants,
             modules);
-
-        gyroYaw = super.getPigeon2().getYaw();
 
         for (int i = 0; i < 4; i++) {
             TalonFX driveMotor = super.getModule(i).getDriveMotor();
@@ -66,7 +61,6 @@ public class DriveIOPhoenix extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
         // Refresh all signals
         BaseStatusSignal.refreshAll(drivePositionSignals);
         BaseStatusSignal.refreshAll(driveVelocitySignals);
-        BaseStatusSignal.refreshAll(gyroYaw);
 
         // Update drive inputs
         inputs.fromSwerveDriveState(super.getStateCopy());
@@ -78,7 +72,8 @@ public class DriveIOPhoenix extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder>
             inputs.driveVelocitiesRadPerSec[i] =
                 Units.rotationsToRadians(driveVelocitySignals[i].getValueAsDouble());
         }
-        inputs.gyroAngle = Rotation2d.fromDegrees(gyroYaw.getValueAsDouble());
+        
+        inputs.gyroAngle = super.getRotation3d().toRotation2d();
     }
 
     @Override

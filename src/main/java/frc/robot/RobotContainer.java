@@ -93,8 +93,7 @@ public class RobotContainer {
                             drive,
                             new AprilTagIOPhotonSim(AprilTagVisionConstants.leftCameraConfig, visionViz),
                             new AprilTagIOPhotonSim(AprilTagVisionConstants.rightCameraConfig, visionViz),
-                            new AprilTagIOPhotonSim(AprilTagVisionConstants.backCameraConfig, visionViz),
-                            new AprilTagIOPhotonSim(AprilTagVisionConstants.backLeftCameraConfig, visionViz)
+                            new AprilTagIOPhotonSim(AprilTagVisionConstants.backCameraConfig, visionViz)
                         );
                 }
             }

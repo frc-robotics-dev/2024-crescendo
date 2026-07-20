@@ -19,11 +19,10 @@ public class DriveIOMapleSim extends DriveIOPhoenix {
     @Getter private final MapleSimSwerveDrivetrain drivetrain;
     private final Notifier simNotifier;
 
-    private static final double kSimLoopPeriod = 0.002; // 2 ms
+    private final double kSimLoopPeriod = 0.002; // 2 ms
 
     public DriveIOMapleSim(SwerveModuleConstants<?, ?, ?>... modules) {
-        super(
-            MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
+        super(MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(DriveConstants.moduleConstants));
 
         drivetrain =
             new MapleSimSwerveDrivetrain(
@@ -41,10 +40,6 @@ public class DriveIOMapleSim extends DriveIOPhoenix {
 
         simNotifier = new Notifier(drivetrain::update);
         simNotifier.startPeriodic(kSimLoopPeriod);
-    }
-
-    public DriveIOMapleSim() {
-        this(DriveConstants.moduleConstants);
     }
 
     @Override
